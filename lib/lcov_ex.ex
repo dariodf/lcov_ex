@@ -1,5 +1,9 @@
 defmodule LcovEx do
-  @moduledoc false
+  @moduledoc """
+  Lcov file generator for Elixir projects.
+
+  Go to https://github.com/dariodf/lcov_ex for installation and usage instructions.
+  """
 
   alias LcovEx.{Formatter, Stats}
 
