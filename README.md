@@ -22,7 +22,7 @@ Add to your dependencies:
 ```elixir
 def deps do
   [
-    {:lcov_ex, "~> 0.1.0"}
+    {:lcov_ex, "~> 0.1.0", only: :test, runtime: false}
   ]
 end
 ```
