@@ -3,15 +3,17 @@ defmodule LcovEx.FormatterTest do
 
   describe "ExampleProject" do
     test "run mix test --cover with LcovEx" do
-      assert LcovEx.Formatter.format_lcov(
-               FakeModule,
-               "path/to/file.ex",
-               [{"foo/0", 1}, {"bar/2", 0}],
-               2,
-               1,
-               [{"3", 1}, {"5", 0}],
-               2,
-               1
+      assert IO.iodata_to_binary(
+               LcovEx.Formatter.format_lcov(
+                 FakeModule,
+                 "path/to/file.ex",
+                 [{"foo/0", 1}, {"bar/2", 0}],
+                 2,
+                 1,
+                 [{3, 1}, {5, 0}],
+                 2,
+                 1
+               )
              ) ==
                """
                TN:Elixir.FakeModule

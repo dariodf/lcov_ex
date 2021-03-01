@@ -39,10 +39,10 @@ defmodule LcovEx.Stats do
   ## Examples
 
       iex> LcovEx.Stats.line_coverage_data([{{MyModule, 0}, 3}, {{MyModule, 0}, 0}, {{MyModule, 8}, 0}])
-      {[{"8", 0}], %{lf: 1, lh: 0}}
+      {[{8, 0}], %{lf: 1, lh: 0}}
 
       iex> LcovEx.Stats.line_coverage_data([{{MyModule, 1}, 12}, {{MyModule, 1}, 0}, {{MyModule, 2}, 0}])
-      {[{"1", 12}, {"2", 0}], %{lf: 2, lh: 1}}
+      {[{1, 12}, {2, 0}], %{lf: 2, lh: 1}}
 
   """
   @spec line_coverage_data(cover_analyze_line_output()) ::
@@ -55,15 +55,15 @@ defmodule LcovEx.Stats do
             acc
 
           {^previous_line, count} ->
-            [{line_str, previous_count} | rest] = list
+            [{line, previous_count} | rest] = list
             count = max(count, previous_count)
 
             lh = increment_line_hit(lh, count, previous_count)
 
-            {[{line_str, count} | rest], previous_line, lf, lh}
+            {[{line, count} | rest], previous_line, lf, lh}
 
           {{_mod, line} = previous_line, count} ->
-            list = [{"#{line}", count} | list]
+            list = [{line, count} | list]
             lf = lf + 1
             lh = increment_line_hit(lh, count, 0)
             {list, previous_line, lf, lh}
@@ -71,7 +71,7 @@ defmodule LcovEx.Stats do
       end)
 
     {Enum.reverse(list_reversed), %{lf: lf, lh: lh}}
-          end
+  end
 
   defp increment_line_hit(lh, count, previous_count)
   defp increment_line_hit(lh, 0, _), do: lh

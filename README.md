@@ -40,6 +40,12 @@ def project do
 
 The `output` option indicates the output folder for the generated file.
 
+Optionally, the `ignore_paths` option can be a list of prefixes to ignore when generating the coverage report.
+
+```elixir
+test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/"]],
+```
+
 ## Usage
 
 Run tests with coverage:

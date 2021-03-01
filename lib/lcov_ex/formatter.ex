@@ -9,6 +9,8 @@ defmodule LcovEx.Formatter do
   @type path :: binary()
   @type coverage_info :: {binary(), integer()}
 
+  @newline "\n"
+
   @doc """
   Create a lcov specification for a module.
   """
@@ -24,32 +26,43 @@ defmodule LcovEx.Formatter do
         ) :: binary()
   def format_lcov(mod, path, functions_coverage, fnf, fnh, lines_coverage, lf, lh) do
     # TODO FN
-    """
-    TN:#{mod}
-    SF:#{path}
-    #{fnda(functions_coverage)}
-    FNF:#{fnf}
-    FNH:#{fnh}
-    #{da(lines_coverage)}
-    LF:#{lf}
-    LH:#{lh}
-    end_of_record
-    """
+    [
+      "TN:",
+      Atom.to_string(mod),
+      @newline,
+      "SF:",
+      path,
+      @newline,
+      fnda(functions_coverage),
+      "FNF:",
+      Integer.to_string(fnf),
+      @newline,
+      "FNH:",
+      Integer.to_string(fnh),
+      @newline,
+      da(lines_coverage),
+      "LF:",
+      Integer.to_string(lf),
+      @newline,
+      "LH:",
+      Integer.to_string(lh),
+      @newline,
+      "end_of_record",
+      @newline
+    ]
   end
 
   # FNDA:<execution count>,<function name>
   defp fnda(functions_coverage) do
     Enum.map(functions_coverage, fn {function_name, execution_count} ->
-      "FNDA:#{execution_count},#{function_name}"
+      ["FNDA:", Integer.to_string(execution_count), ?,, function_name, @newline]
     end)
-    |> Enum.join("\n")
   end
 
   # DA:<line number>,<execution count>[,<checksum>]
   defp da(lines_coverage) do
     Enum.map(lines_coverage, fn {line_number, execution_count} ->
-      "DA:#{line_number},#{execution_count}"
+      ["DA:", Integer.to_string(line_number), ?,, Integer.to_string(execution_count), @newline]
     end)
-    |> Enum.join("\n")
   end
 end
