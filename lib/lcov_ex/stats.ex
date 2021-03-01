@@ -18,7 +18,8 @@ defmodule LcovEx.Stats do
   @spec function_coverage_data(cover_analyze_function_output()) ::
           {[coverage_info(), ...], %{fnf: integer(), fnh: integer()}}
   def function_coverage_data(fun_data) do
-    Enum.reduce_while(fun_data, {[], %{fnf: 0, fnh: 0}}, fn data, acc = {list, %{fnf: fnf, fnh: fnh}} ->
+    Enum.reduce_while(fun_data, {[], %{fnf: 0, fnh: 0}}, fn data,
+                                                            acc = {list, %{fnf: fnf, fnh: fnh}} ->
       # TODO get FN + line by inspecting file
       case data do
         {{_, :__info__, _1}, _} ->
@@ -44,7 +45,8 @@ defmodule LcovEx.Stats do
   @spec line_coverage_data(cover_analyze_line_output()) ::
           {[coverage_info(), ...], %{lf: integer(), lh: integer()}}
   def line_coverage_data(lines_data) do
-    Enum.reduce_while(lines_data, {[], %{lf: 0, lh: 0}}, fn data, acc = {list, %{lf: lf, lh: lh}} ->
+    Enum.reduce_while(lines_data, {[], %{lf: 0, lh: 0}}, fn data,
+                                                            acc = {list, %{lf: lf, lh: lh}} ->
       case data do
         {{_, 0}, _} ->
           {:cont, acc}

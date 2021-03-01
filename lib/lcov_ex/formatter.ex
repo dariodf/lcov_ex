@@ -12,7 +12,16 @@ defmodule LcovEx.Formatter do
   @doc """
   Create a lcov specification for a module.
   """
-  @spec format_lcov(mod(), path(), [coverage_info(), ...], integer(), integer(), [coverage_info(), ...], integer(), integer()) :: binary()
+  @spec format_lcov(
+          mod(),
+          path(),
+          [coverage_info(), ...],
+          integer(),
+          integer(),
+          [coverage_info(), ...],
+          integer(),
+          integer()
+        ) :: binary()
   def format_lcov(mod, path, functions_coverage, fnf, fnh, lines_coverage, lf, lh) do
     # TODO FN
     """
