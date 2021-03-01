@@ -41,19 +41,40 @@ defmodule LcovEx.Stats do
       iex> LcovEx.Stats.line_coverage_data([{{MyModule, 0}, 3}, {{MyModule, 0}, 0}, {{MyModule, 8}, 0}])
       {[{"8", 0}], %{lf: 1, lh: 0}}
 
+      iex> LcovEx.Stats.line_coverage_data([{{MyModule, 1}, 12}, {{MyModule, 1}, 0}, {{MyModule, 2}, 0}])
+      {[{"1", 12}, {"2", 0}], %{lf: 2, lh: 1}}
+
   """
   @spec line_coverage_data(cover_analyze_line_output()) ::
           {[coverage_info(), ...], %{lf: integer(), lh: integer()}}
   def line_coverage_data(lines_data) do
-    Enum.reduce_while(lines_data, {[], %{lf: 0, lh: 0}}, fn data,
-                                                            acc = {list, %{lf: lf, lh: lh}} ->
-      case data do
-        {{_, 0}, _} ->
-          {:cont, acc}
+    {list_reversed, _previous_line, lf, lh} =
+      Enum.reduce(lines_data, {[], nil, 0, 0}, fn data, acc = {list, previous_line, lf, lh} ->
+        case data do
+          {{_, 0}, _} ->
+            acc
 
-        {{_mod, line}, count} ->
-          {:cont, {list ++ [{"#{line}", count}], %{lf: lf + 1, lh: lh + ((count > 0 && 1) || 0)}}}
-      end
-    end)
-  end
+          {^previous_line, count} ->
+            [{line_str, previous_count} | rest] = list
+            count = max(count, previous_count)
+
+            lh = increment_line_hit(lh, count, previous_count)
+
+            {[{line_str, count} | rest], previous_line, lf, lh}
+
+          {{_mod, line} = previous_line, count} ->
+            list = [{"#{line}", count} | list]
+            lf = lf + 1
+            lh = increment_line_hit(lh, count, 0)
+            {list, previous_line, lf, lh}
+        end
+      end)
+
+    {Enum.reverse(list_reversed), %{lf: lf, lh: lh}}
+          end
+
+  defp increment_line_hit(lh, count, previous_count)
+  defp increment_line_hit(lh, 0, _), do: lh
+  defp increment_line_hit(lh, _count, 0), do: lh + 1
+  defp increment_line_hit(lh, _, _), do: lh
 end
