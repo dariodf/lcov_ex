@@ -23,7 +23,7 @@ defmodule LcovEx.Formatter do
           [coverage_info(), ...],
           integer(),
           integer()
-        ) :: binary()
+        ) :: [binary()]
   def format_lcov(mod, path, functions_coverage, fnf, fnh, lines_coverage, lf, lh) do
     # TODO FN
     [
