@@ -20,22 +20,38 @@ Please let me know if you made it work in your previously unlisted favorite edit
 Add to your dependencies:
 
 ```elixir
-def deps do
-  [
-    {:lcov_ex, "~> 0.1", only: :test, runtime: false}
-  ]
-end
+  def deps do
+    [
+      {:lcov_ex, "~> 0.2", only: :test, runtime: false}
+    ]
+  end
 ```
 
-Then, select `LcovEx` as your test coverage tool in your project configuration:
+## Usage
+
+```shell
+mix lcov
+```
+
+File should be created at `./cover/lcov.info` by default.
+
+### As test coverage tool
+
+Alternatively, you can set up `LcovEx` as your test coverage tool in your project configuration:
 
 ```elixir
-def project do
-  [
-    ...
-    test_coverage: [tool: LcovEx, output: "cover"],
-    ...
-  ]
+  def project do
+    [
+      ...
+      test_coverage: [tool: LcovEx, output: "cover"],
+      ...
+    ]
+```
+
+And then, run with:
+
+```shell
+mix test --cover
 ```
 
 The `output` option indicates the output folder for the generated file.
@@ -43,20 +59,14 @@ The `output` option indicates the output folder for the generated file.
 Optionally, the `ignore_paths` option can be a list of prefixes to ignore when generating the coverage report.
 
 ```elixir
-test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/"]],
+  def project do
+    [
+      ...
+      test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/"]]
+      ...
+    ]
 ```
-
-## Usage
-
-Run tests with coverage:
-
-```shell
-mix test --cover
-```
-
-File should be created at `./cover/lcov.info` by default.
 
 ## TODOs
 
 - Add missing `FN` lines, for the sake of completion.
-- Make it work as a `Task` to avoid overwriting the `test_coverage` tool config.
