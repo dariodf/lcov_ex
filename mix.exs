@@ -1,7 +1,7 @@
 defmodule LcovEx.MixProject do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.2.0"
 
   def project do
     [
@@ -10,7 +10,6 @@ defmodule LcovEx.MixProject do
       version: @version,
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      test_coverage: [tool: LcovEx],
       deps: deps(),
       docs: docs(),
       package: package()
@@ -20,7 +19,7 @@ defmodule LcovEx.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :tools]
     ]
   end
 

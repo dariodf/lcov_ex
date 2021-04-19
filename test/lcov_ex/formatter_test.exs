@@ -2,7 +2,7 @@ defmodule LcovEx.FormatterTest do
   use ExUnit.Case
 
   describe "ExampleProject" do
-    test "run mix test --cover with LcovEx" do
+    test "format_lcov" do
       assert IO.iodata_to_binary(
                LcovEx.Formatter.format_lcov(
                  FakeModule,
