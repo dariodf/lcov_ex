@@ -6,7 +6,7 @@ The docs can be found at [https://hexdocs.pm/lcov_ex](https://hexdocs.pm/lcov_ex
 
 ## Why
 
-Many test coverage tools use [`lcov` files](https://manpages.debian.org/stretch/lcov/geninfo.1.en.html#FILES) as an input to generate reports.
+Many test coverage tools use [`lcov`](https://manpages.debian.org/stretch/lcov/geninfo.1.en.html#FILES) files as an input to generate reports.
 
 You can use it as I do to watch inline coverage progress with the following editors:
 
