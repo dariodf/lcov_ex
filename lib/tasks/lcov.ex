@@ -2,7 +2,7 @@ defmodule Mix.Tasks.Lcov do
   @moduledoc "Generates lcov test coverage files for the application"
   @shortdoc "Generates lcov files"
   @preferred_cli_env :test
-  @recursive true
+  # TODO @recursive true
 
   use Mix.Task
   alias LcovEx.MixFileHelper

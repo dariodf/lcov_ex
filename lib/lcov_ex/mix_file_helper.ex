@@ -43,7 +43,7 @@ defmodule LcovEx.MixFileHelper do
     project_start_line = token_metadata[:line]
     project_end_line = token_metadata[:end_of_expression][:line]
 
-    # Replace the configs
+    # Update the configs
     # We try to maintain the key positions or append any new configs to the bottom
     new_config =
       Enum.reduce(new_configs, config, fn {key, value}, config ->
@@ -66,6 +66,56 @@ defmodule LcovEx.MixFileHelper do
 
     # Replace the project config into the file
     replace_range(mix_path, replace_range, project_string_replacement)
+
+    # Format new mix.exs file
+    System.cmd("mix", ["format", mix_path])
+    :ok
+  end
+
+  @doc """
+  Update mix deps.
+  """
+  @spec update_deps(path(), keyword()) :: :ok
+  def update_deps(mix_path, new_deps) do
+    # Format mix.exs file
+    System.cmd("mix", ["format", mix_path])
+
+    # Get file as AST representation
+    {:defmodule, _, [_, [do: {_, _, ast_nodes}]]} =
+      Code.string_to_quoted!(File.read!(mix_path), token_metadata: true)
+
+    # Obtain the deps AST node
+    deps_ast_node =
+      Enum.find(ast_nodes, fn ast -> match?({:def, _, [{:deps, _, _}, _]}, ast) end)
+
+    # Get deps and file start and ending line numbers for replacement
+    {_, token_metadata, [deps_ast_tuple, [do: deps]]} = deps_ast_node
+    deps_start_line = token_metadata[:line]
+    deps_end_line = token_metadata[:end_of_expression][:line]
+
+    # Update the deps
+    # We try to maintain the key positions or append any new deps to the bottom
+    new_deps =
+      Enum.reduce(new_deps, deps, fn {key, value}, deps ->
+        case Keyword.pop(deps, key) do
+          {nil, list} -> list ++ [{key, value}]
+          _ -> put_in(deps[key], value)
+        end
+      end)
+
+    new_deps_ast_node = put_elem(deps_ast_node, 2, [deps_ast_tuple, [do: new_deps]])
+
+    # Reconvert to string
+    deps_string_replacement =
+      new_deps_ast_node
+      |> Macro.to_string()
+      |> String.replace_prefix("def(deps) do", "def deps do")
+      |> String.replace_suffix("end", "end\n")
+
+    replace_range = deps_start_line..deps_end_line
+
+    # Replace the deps config into the file
+    replace_range(mix_path, replace_range, deps_string_replacement)
 
     # Format new mix.exs file
     System.cmd("mix", ["format", mix_path])
