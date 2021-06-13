@@ -8,7 +8,7 @@ defmodule LcovEx do
   alias LcovEx.{Formatter, Stats}
 
   def start(compile_path, opts) do
-    Mix.shell().info("Cover compiling modules ... ")
+    log_info("Cover compiling modules ... ", opts)
     :cover.start()
 
     case :cover.compile_beam_directory(compile_path |> to_charlist) do
@@ -23,7 +23,7 @@ defmodule LcovEx do
     ignored_paths = Keyword.get(opts, :ignore_paths, [])
 
     fn ->
-      Mix.shell().info("\nGenerating lcov file ... ")
+      log_info("\nGenerating lcov file ... ", opts)
 
       lcov =
         :cover.modules()
@@ -33,7 +33,7 @@ defmodule LcovEx do
       File.mkdir_p!(output)
       path = "#{output}/lcov.info"
       File.write!(path, lcov, [:write])
-      Mix.shell().info("\nFile successfully created at #{path}")
+      log_info("\nFile successfully created at #{path}", opts)
     end
   end
 
@@ -55,5 +55,11 @@ defmodule LcovEx do
     {lines_coverage, %{lf: lf, lh: lh}} = Stats.line_coverage_data(lines_data)
 
     Formatter.format_lcov(mod, path, functions_coverage, fnf, fnh, lines_coverage, lf, lh)
+  end
+
+  defp log_info(msg, opts) do
+    unless Keyword.get(opts, :quiet, false) do
+      Mix.shell().info(msg)
+    end
   end
 end
