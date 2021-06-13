@@ -12,13 +12,13 @@ defmodule Mix.Tasks.Lcov do
   """
   @impl Mix.Task
   def run(args) do
-    {opts, files} = OptionParser.parse!(args, strict: [quiet: :boolean])
+    {opts, files} = OptionParser.parse!(args, strict: [quiet: :boolean, umbrella: :boolean])
     path = Enum.at(files, 0) || File.cwd!()
     mix_path = "#{path}/mix.exs" |> String.replace("//", "/")
     MixFileHelper.backup(mix_path)
 
     try do
-      config = [test_coverage: [tool: LcovEx, quiet: opts[:quiet]]]
+      config = [test_coverage: [tool: LcovEx, quiet: opts[:quiet], umbrella: opts[:umbrella]]]
       MixFileHelper.update_project_config(mix_path, config)
       System.cmd("mix", ["test", "--cover"], cd: path, into: IO.stream(:stdio, :line))
     after
