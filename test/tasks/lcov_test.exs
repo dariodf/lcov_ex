@@ -21,6 +21,18 @@ defmodule LcovEx.Tasks.LcovTest do
       # Cleanup
       File.rm("example_project/cover/lcov.info")
     end
+
+    test "mix lcov --quiet" do
+      assert {output, 0} = System.cmd("mix", ["lcov", "--quiet"], cd: "example_project")
+
+      refute output =~ "Generating lcov file ..."
+      refute output =~ "File successfully created at cover/lcov.info"
+
+      assert File.read!("example_project/cover/lcov.info") == output()
+
+      # Cleanup
+      File.rm("example_project/cover/lcov.info")
+    end
   end
 
   defp output do
