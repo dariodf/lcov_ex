@@ -28,7 +28,7 @@ defmodule LcovEx do
       lcov =
         :cover.modules()
         |> Enum.sort()
-        |> Enum.map(&calculate_module_coverage(&1, ignored_paths))
+        |> Enum.map(&calculate_module_coverage(&1, ignored_paths, opts[:umbrella]))
 
       File.mkdir_p!(output)
       path = "#{output}/lcov.info"
@@ -37,13 +37,17 @@ defmodule LcovEx do
     end
   end
 
-  defp calculate_module_coverage(mod, ignored_paths) do
-    path = mod.module_info(:compile)[:source] |> to_string() |> Path.relative_to_cwd()
+  defp calculate_module_coverage(mod, ignored_paths, umbrella) do
+    source_string = mod.module_info(:compile)[:source] |> to_string()
+    path = source_string |> Path.relative_to_cwd()
 
     if Enum.any?(ignored_paths, &String.starts_with?(path, &1)) do
       []
     else
-      calculate_and_format_coverage(mod, path)
+      case umbrella do
+        true -> calculate_and_format_coverage(mod, source_string)
+        _ -> calculate_and_format_coverage(mod, path)
+      end
     end
   end
 
