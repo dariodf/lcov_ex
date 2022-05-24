@@ -28,26 +28,32 @@ defmodule LcovEx do
       lcov =
         :cover.modules()
         |> Enum.sort()
-        |> Enum.map(&calculate_module_coverage(&1, ignored_paths, opts[:umbrella]))
+        |> Enum.map(&calculate_module_coverage(&1, ignored_paths))
 
       File.mkdir_p!(output)
       path = "#{output}/lcov.info"
       File.write!(path, lcov, [:write])
-      log_info("\nFile successfully created at #{path}", opts)
+
+      rel_path =
+        if Mix.Task.recursing?() do
+          umbrella_path = File.cwd!() |> Path.join("../..") |> Path.expand()
+          File.cwd!() |> Path.join(path) |> Path.relative_to(umbrella_path)
+        else
+          path
+        end
+
+      log_info("\nFile successfully created at #{rel_path}", opts)
+      :cover.stop()
     end
   end
 
-  defp calculate_module_coverage(mod, ignored_paths, umbrella) do
-    source_string = mod.module_info(:compile)[:source] |> to_string()
-    path = source_string |> Path.relative_to_cwd()
+  defp calculate_module_coverage(mod, ignored_paths) do
+    path = mod.module_info(:compile)[:source] |> to_string() |> Path.relative_to_cwd()
 
     if Enum.any?(ignored_paths, &String.starts_with?(path, &1)) do
       []
     else
-      case umbrella do
-        true -> calculate_and_format_coverage(mod, source_string)
-        _ -> calculate_and_format_coverage(mod, path)
-      end
+      calculate_and_format_coverage(mod, path)
     end
   end
 
