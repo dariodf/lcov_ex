@@ -73,10 +73,6 @@ Optionally, the `ignore_paths` option can be a list of prefixes to ignore when g
     ]
 ```
 
-### In umbrella projects
-
-Make sure that every app has `lcov_ex` added as a dependency (see [_Installation_](#installation)).
-
 ## TODOs
 
 - Add missing `FN` lines, for the sake of completion.
