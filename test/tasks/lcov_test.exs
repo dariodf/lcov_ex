@@ -47,7 +47,8 @@ defmodule LcovEx.Tasks.LcovTest do
       assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
 
       assert output =~ "Generating lcov file ..."
-      assert output =~ "File successfully created at cover/lcov.info"
+      assert output =~ "File successfully created at apps/example_project/cover/lcov.info"
+      assert output =~ "File successfully created at apps/example_project_2/cover/lcov.info"
 
       assert File.read!("example_umbrella_project/apps/example_project/cover/lcov.info") ==
                output()

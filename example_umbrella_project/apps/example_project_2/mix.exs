@@ -18,6 +18,6 @@ defmodule ExampleProject2.MixProject do
   end
 
   defp deps do
-    [{:lcov_ex, path: "../../../", only: [:dev, :test]}]
+    []
   end
 end
