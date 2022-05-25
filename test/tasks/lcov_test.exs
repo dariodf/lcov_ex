@@ -2,12 +2,17 @@ defmodule LcovEx.Tasks.LcovTest do
   use ExUnit.Case, async: true
 
   describe "ExampleProject" do
+    setup do
+      on_exit(fn ->
+        # Cleanup
+        File.rm("example_project/cover/lcov.info")
+      end)
+    end
+
     test "lcov task" do
       assert Mix.Tasks.Lcov.run(["./example_project"])
 
       assert File.read!("example_project/cover/lcov.info") == output()
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
     end
 
     test "mix lcov" do
@@ -17,9 +22,6 @@ defmodule LcovEx.Tasks.LcovTest do
       assert output =~ "File successfully created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
-
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
     end
 
     test "mix lcov --quiet" do
@@ -29,21 +31,29 @@ defmodule LcovEx.Tasks.LcovTest do
       refute output =~ "File successfully created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
+    end
+  end
 
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
+  describe "ExampleUmbrellaProject" do
+    setup do
+      on_exit(fn ->
+        # Cleanup
+        File.rm("example_umbrella_project/apps/example_project/cover/lcov.info")
+        File.rm("example_umbrella_project/apps/example_project_2/cover/lcov.info")
+      end)
     end
 
-    test "mix lcov --umbrella" do
-      assert {output, 0} = System.cmd("mix", ["lcov", "--umbrella"], cd: "example_project")
+    test "mix lcov" do
+      assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
 
       assert output =~ "Generating lcov file ..."
       assert output =~ "File successfully created at cover/lcov.info"
 
-      assert File.read!("example_project/cover/lcov.info") == umbrella_output()
+      assert File.read!("example_umbrella_project/apps/example_project/cover/lcov.info") ==
+               output()
 
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
+      assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") ==
+               output_2()
     end
   end
 
@@ -73,10 +83,10 @@ defmodule LcovEx.Tasks.LcovTest do
     """
   end
 
-  defp umbrella_output do
+  defp output_2 do
     """
-    TN:Elixir.ExampleProject
-    SF:#{root_dir()}/example_project/lib/example_project.ex
+    TN:Elixir.ExampleProject2
+    SF:lib/example_project_2.ex
     FNDA:1,covered/0
     FNDA:0,not_covered/0
     FNF:2
@@ -86,8 +96,8 @@ defmodule LcovEx.Tasks.LcovTest do
     LF:2
     LH:1
     end_of_record
-    TN:Elixir.ExampleProject.ExampleModule
-    SF:#{root_dir()}/example_project/lib/example_project/example_module.ex
+    TN:Elixir.ExampleProject2.ExampleModule
+    SF:lib/example_project_2/example_module.ex
     FNDA:1,cover/0
     FNDA:1,get_value/0
     FNF:2
@@ -97,9 +107,5 @@ defmodule LcovEx.Tasks.LcovTest do
     LH:1
     end_of_record
     """
-  end
-
-  defp root_dir do
-    Path.expand(__DIR__ <> "/../..")
   end
 end

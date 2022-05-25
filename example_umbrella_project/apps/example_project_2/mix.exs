@@ -1,9 +1,9 @@
-defmodule ExampleProject.MixProject do
+defmodule ExampleProject2.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :example_project,
+      app: :example_project_2,
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
@@ -18,8 +18,6 @@ defmodule ExampleProject.MixProject do
   end
 
   defp deps do
-    [
-      {:lcov_ex, path: "../", only: [:dev, :test]}
-    ]
+    [{:lcov_ex, path: "../../../", only: [:dev, :test]}]
   end
 end
