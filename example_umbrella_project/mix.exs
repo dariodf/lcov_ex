@@ -16,8 +16,6 @@ defmodule ExampleUmbrellaProject.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    [
-      {:lcov_ex, path: "../", only: [:dev, :test]}
-    ]
+    []
   end
 end

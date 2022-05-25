@@ -1,7 +1,21 @@
 defmodule LcovExTest do
   use ExUnit.Case
+  alias LcovEx.MixFileHelper
 
   describe "ExampleProject" do
+    setup do
+      mix_path = "#{File.cwd!()}/example_project/mix.exs" |> String.replace("//", "/")
+      MixFileHelper.backup(mix_path)
+      config = [test_coverage: [tool: LcovEx]]
+      MixFileHelper.update_project_config(mix_path, config)
+
+      on_exit(fn ->
+        # Cleanup
+        MixFileHelper.recover(mix_path)
+        File.rm("example_project/cover/lcov.info")
+      end)
+    end
+
     test "run mix test --cover with LcovEx" do
       System.cmd("mix", ["test", "--cover"], env: [{"LCOV", "true"}], cd: "example_project")
 
@@ -29,9 +43,6 @@ defmodule LcovExTest do
                LH:1
                end_of_record
                """
-
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
     end
   end
 end

@@ -7,7 +7,6 @@ defmodule ExampleProject.MixProject do
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      test_coverage: [tool: LcovEx],
       deps: deps()
     ]
   end
@@ -19,6 +18,6 @@ defmodule ExampleProject.MixProject do
   end
 
   defp deps do
-    []
+    [{:lcov_ex, path: "../../../", only: [:dev, :test]}]
   end
 end

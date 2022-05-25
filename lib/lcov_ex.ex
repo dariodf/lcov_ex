@@ -34,15 +34,7 @@ defmodule LcovEx do
       path = "#{output}/lcov.info"
       File.write!(path, lcov, [:write])
 
-      rel_path =
-        if Mix.Task.recursing?() do
-          umbrella_path = File.cwd!() |> Path.join("../..") |> Path.expand()
-          File.cwd!() |> Path.join(path) |> Path.relative_to(umbrella_path)
-        else
-          path
-        end
-
-      log_info("\nFile successfully created at #{rel_path}", opts)
+      log_info("\nFile successfully created at #{path}", opts)
       :cover.stop()
     end
   end

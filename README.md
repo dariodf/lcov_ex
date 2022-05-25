@@ -35,6 +35,12 @@ mix lcov
 
 File should be created at `./cover/lcov.info` by default.
 
+To run silently use the `--quiet` option:
+
+```shell
+mix lcov --quiet
+```
+
 ### As test coverage tool
 
 Alternatively, you can set up `LcovEx` as your test coverage tool in your project configuration:
@@ -66,6 +72,10 @@ Optionally, the `ignore_paths` option can be a list of prefixes to ignore when g
       ...
     ]
 ```
+
+### In umbrella projects
+
+Make sure that every app has `lcov_ex` added as a dependency (see [_Installation_](#installation)).
 
 ## TODOs
 

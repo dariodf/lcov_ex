@@ -2,12 +2,17 @@ defmodule LcovEx.Tasks.LcovTest do
   use ExUnit.Case, async: true
 
   describe "ExampleProject" do
+    setup do
+      on_exit(fn ->
+        # Cleanup
+        File.rm("example_project/cover/lcov.info")
+      end)
+    end
+
     test "lcov task" do
       assert Mix.Tasks.Lcov.run(["./example_project"])
 
       assert File.read!("example_project/cover/lcov.info") == output()
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
     end
 
     test "mix lcov" do
@@ -17,9 +22,6 @@ defmodule LcovEx.Tasks.LcovTest do
       assert output =~ "File successfully created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
-
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
     end
 
     test "mix lcov --quiet" do
@@ -29,27 +31,29 @@ defmodule LcovEx.Tasks.LcovTest do
       refute output =~ "File successfully created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
+    end
+  end
 
-      # Cleanup
-      File.rm("example_project/cover/lcov.info")
+  describe "ExampleUmbrellaProject" do
+    setup do
+      on_exit(fn ->
+        # Cleanup
+        File.rm("example_umbrella_project/apps/example_project/cover/lcov.info")
+        File.rm("example_umbrella_project/apps/example_project_2/cover/lcov.info")
+      end)
     end
 
-    test "mix lcov for umbrella project" do
-      assert {output, 0} =
-               System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
+    test "mix lcov" do
+      assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
 
       assert output =~ "Generating lcov file ..."
-      assert output =~ "File successfully created at apps/example_project/cover/lcov.info"
-      assert output =~ "File successfully created at apps/example_project_2/cover/lcov.info"
+      assert output =~ "File successfully created at cover/lcov.info"
 
       assert File.read!("example_umbrella_project/apps/example_project/cover/lcov.info") ==
                output()
 
       assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") ==
                output_2()
-
-      # Cleanup
-      File.rm("example_umbrella_project/apps/example_project/cover/lcov.info")
     end
   end
 
