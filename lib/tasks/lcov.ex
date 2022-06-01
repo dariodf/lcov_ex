@@ -12,7 +12,7 @@ defmodule Mix.Tasks.Lcov do
   """
   @impl Mix.Task
   def run(args) do
-    {opts, files} = OptionParser.parse!(args, strict: [quiet: :boolean])
+    {opts, files} = OptionParser.parse!(args, strict: [quiet: :boolean, output: :string])
     path = Enum.at(files, 0) || File.cwd!()
 
     affected_files =
@@ -27,21 +27,30 @@ defmodule Mix.Tasks.Lcov do
 
     Enum.each(affected_files, fn mix_path -> MixFileHelper.backup(mix_path) end)
 
+    output = opts[:output] || "cover"
+    file_path = "#{output}/lcov.info"
+    File.mkdir_p!(output)
+    File.rm(file_path)
+
     try do
-      config = [test_coverage: [tool: LcovEx]]
+      config = [test_coverage: [tool: LcovEx, output: output]]
 
       Enum.each(affected_files, fn mix_path ->
         MixFileHelper.update_project_config(mix_path, config)
       end)
 
-      opts =
+      task_opts =
         if opts[:quiet] do
           [cd: path]
         else
           [cd: path, into: IO.stream(:stdio, :line)]
         end
 
-      System.cmd("mix", ["test", "--cover"], opts)
+      System.cmd("mix", ["test", "--cover"], task_opts)
+
+      unless opts[:quiet] do
+        IO.puts("\nCoverage file successfully created at #{file_path}")
+      end
     after
       Enum.each(affected_files, fn mix_path -> MixFileHelper.recover(mix_path) end)
     end

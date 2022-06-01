@@ -22,27 +22,24 @@ defmodule LcovEx do
     output = opts[:output]
     ignored_paths = Keyword.get(opts, :ignore_paths, [])
 
+    output_path =
+      if Mix.Task.recursing?() do
+        File.cwd!() |> Path.join("../..") |> Path.join(output) |> Path.expand()
+      else
+        output
+      end
+
     fn ->
-      log_info("\nGenerating lcov file ... ", opts)
+      log_info("\nAdding to lcov file... ", opts)
 
       lcov =
         :cover.modules()
         |> Enum.sort()
         |> Enum.map(&calculate_module_coverage(&1, ignored_paths))
 
-      File.mkdir_p!(output)
-      path = "#{output}/lcov.info"
-      File.write!(path, lcov, [:write])
+      file_path = "#{output_path}/lcov.info"
+      File.write!(file_path, lcov, [:append])
 
-      rel_path =
-        if Mix.Task.recursing?() do
-          umbrella_path = File.cwd!() |> Path.join("../..") |> Path.expand()
-          File.cwd!() |> Path.join(path) |> Path.relative_to(umbrella_path)
-        else
-          path
-        end
-
-      log_info("\nFile successfully created at #{rel_path}", opts)
       :cover.stop()
     end
   end

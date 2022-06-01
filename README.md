@@ -41,6 +41,14 @@ To run silently use the `--quiet` option:
 mix lcov --quiet
 ```
 
+To output the file to a differnt folder, use the `--output` option:
+
+```shell
+mix lcov --output coverage
+...
+Coverage file successfully created at coverage/lcov.info
+```
+
 ### As test coverage tool
 
 Alternatively, you can set up `LcovEx` as your test coverage tool in your project configuration:
