@@ -18,8 +18,8 @@ defmodule LcovEx.Tasks.LcovTest do
     test "mix lcov" do
       assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_project")
 
-      assert output =~ "Generating lcov file ..."
-      assert output =~ "File successfully created at cover/lcov.info"
+      assert output =~ "Adding to lcov file..."
+      assert output =~ "Coverage file successfully created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
     end
@@ -27,10 +27,22 @@ defmodule LcovEx.Tasks.LcovTest do
     test "mix lcov --quiet" do
       assert {output, 0} = System.cmd("mix", ["lcov", "--quiet"], cd: "example_project")
 
-      refute output =~ "Generating lcov file ..."
-      refute output =~ "File successfully created at cover/lcov.info"
+      refute output =~ "Adding to lcov file..."
+      refute output =~ "Coverage file successfully created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
+    end
+
+    test "mix lcov --output" do
+      assert {output, 0} =
+               System.cmd("mix", ["lcov", "--output", "coverage"], cd: "example_project")
+
+      assert output =~ "Adding to lcov file..."
+      assert output =~ "Coverage file successfully created at coverage/lcov.info"
+
+      assert File.read!("example_project/coverage/lcov.info") == output()
+    after
+      File.rm_rf!("example_project/coverage")
     end
   end
 
@@ -46,15 +58,11 @@ defmodule LcovEx.Tasks.LcovTest do
     test "mix lcov" do
       assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
 
-      assert output =~ "Generating lcov file ..."
-      assert output =~ "File successfully created at apps/example_project/cover/lcov.info"
-      assert output =~ "File successfully created at apps/example_project_2/cover/lcov.info"
+      assert output =~ "Adding to lcov file..."
+      assert output =~ "Coverage file successfully created at cover/lcov.info"
 
-      assert File.read!("example_umbrella_project/apps/example_project/cover/lcov.info") ==
-               output()
-
-      assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") ==
-               output_2()
+      assert File.read!("example_umbrella_project/cover/lcov.info") ==
+               output() <> output_2()
     end
   end
 
@@ -88,22 +96,22 @@ defmodule LcovEx.Tasks.LcovTest do
     """
     TN:Elixir.ExampleProject2
     SF:lib/example_project_2.ex
+    FNDA:1,also_covered/0
     FNDA:1,covered/0
-    FNDA:0,not_covered/0
-    FNF:2
-    FNH:1
-    DA:5,1
-    DA:9,0
-    LF:2
-    LH:1
-    end_of_record
-    TN:Elixir.ExampleProject2.ExampleModule
-    SF:lib/example_project_2/example_module.ex
-    FNDA:1,cover/0
-    FNDA:1,get_value/0
     FNF:2
     FNH:2
     DA:5,1
+    DA:9,1
+    LF:2
+    LH:2
+    end_of_record
+    TN:Elixir.ExampleProject2.ExampleModule
+    SF:lib/example_project_2/example_module.ex
+    FNDA:2,cover/0
+    FNDA:2,get_value/0
+    FNF:2
+    FNH:2
+    DA:5,2
     LF:1
     LH:1
     end_of_record

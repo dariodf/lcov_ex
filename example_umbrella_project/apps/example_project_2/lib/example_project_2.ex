@@ -5,7 +5,7 @@ defmodule ExampleProject2 do
     ExampleProject2.ExampleModule.cover()
   end
 
-  def not_covered() do
+  def also_covered() do
     ExampleProject2.ExampleModule.cover()
   end
 end
