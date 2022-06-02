@@ -48,8 +48,8 @@ defmodule Mix.Tasks.Lcov do
           [cd: path, into: IO.stream(:stdio, :line)]
         end
 
-      System.cmd("mix", ["test", "--cover"], task_opts)
-    after
+      {_, 0} = System.cmd("mix", ["test", "--cover"], task_opts)
+
       if Mix.Project.umbrella?() do
         for {app, path} <- Mix.Project.apps_paths() do
           app_lcov_path = Path.join(path, file_path)
@@ -65,6 +65,8 @@ defmodule Mix.Tasks.Lcov do
         log_info("\nCoverage file for umbrella created at #{file_path}", opts)
       end
 
+      :ok
+    after
       Enum.each(affected_files, fn mix_path -> MixFileHelper.recover(mix_path) end)
     end
   end
