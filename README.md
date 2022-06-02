@@ -51,6 +51,19 @@ mix lcov --output coverage
 Coverage file successfully created at coverage/lcov.info
 ```
 
+### Umbrella projects
+
+For umbrella projects you can choose to keep the individual apps lcov files with the `--keep` option:
+
+```shell
+mix lcov --keep
+...
+Coverage file for my_app created at apps/my_app/cover/lcov.info
+Coverage file for my_other_app created at apps/my_other_app/cover/lcov.info
+
+Coverage file for umbrella created at cover/lcov.info
+```
+
 ### As test coverage tool
 
 Alternatively, you can set up `LcovEx` as your test coverage tool in your project configuration:

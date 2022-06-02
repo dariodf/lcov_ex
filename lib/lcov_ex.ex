@@ -8,7 +8,7 @@ defmodule LcovEx do
   alias LcovEx.{Formatter, Stats}
 
   def start(compile_path, opts) do
-    log_info("Cover compiling modules ... ", opts)
+    log_info("Compiling coverage... ", opts)
     :cover.start()
 
     case :cover.compile_beam_directory(compile_path |> to_charlist) do
@@ -16,29 +16,27 @@ defmodule LcovEx do
         :ok
 
       {:error, _} ->
-        Mix.raise("Failed to cover compile directory: " <> compile_path)
+        Mix.raise("Failed to compile coverage for directory: " <> compile_path)
     end
 
     output = opts[:output]
     ignored_paths = Keyword.get(opts, :ignore_paths, [])
 
-    output_path =
-      if Mix.Task.recursing?() do
-        File.cwd!() |> Path.join("../..") |> Path.join(output) |> Path.expand()
-      else
-        output
-      end
-
     fn ->
-      log_info("\nAdding to lcov file... ", opts)
+      log_info("\nGenerating lcov file...", opts)
 
       lcov =
         :cover.modules()
         |> Enum.sort()
         |> Enum.map(&calculate_module_coverage(&1, ignored_paths))
 
-      file_path = "#{output_path}/lcov.info"
-      File.write!(file_path, lcov, [:append])
+      File.mkdir_p!(output)
+      path = "#{output}/lcov.info"
+      File.write!(path, lcov, [:write])
+
+      unless Mix.Task.recursing?() do
+        log_info("\nCoverage file created at #{path}", opts)
+      end
 
       :cover.stop()
     end
