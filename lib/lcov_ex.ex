@@ -38,6 +38,7 @@ defmodule LcovEx do
         |> Enum.map(&calculate_module_coverage(&1, ignored_paths))
 
       file_path = "#{output_path}/lcov.info"
+      File.mkdir_p!(output_path)
       File.write!(file_path, lcov, [:append])
 
       :cover.stop()
