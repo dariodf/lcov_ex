@@ -18,8 +18,8 @@ defmodule LcovEx.Tasks.LcovTest do
     test "mix lcov" do
       assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_project")
 
-      assert output =~ "Adding to lcov file..."
-      assert output =~ "Coverage file successfully created at cover/lcov.info"
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
     end
@@ -27,8 +27,8 @@ defmodule LcovEx.Tasks.LcovTest do
     test "mix lcov --quiet" do
       assert {output, 0} = System.cmd("mix", ["lcov", "--quiet"], cd: "example_project")
 
-      refute output =~ "Adding to lcov file..."
-      refute output =~ "Coverage file successfully created at cover/lcov.info"
+      refute output =~ "Generating lcov file..."
+      refute output =~ "Coverage file created at cover/lcov.info"
 
       assert File.read!("example_project/cover/lcov.info") == output()
     end
@@ -37,8 +37,8 @@ defmodule LcovEx.Tasks.LcovTest do
       assert {output, 0} =
                System.cmd("mix", ["lcov", "--output", "coverage"], cd: "example_project")
 
-      assert output =~ "Adding to lcov file..."
-      assert output =~ "Coverage file successfully created at coverage/lcov.info"
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file created at coverage/lcov.info"
 
       assert File.read!("example_project/coverage/lcov.info") == output()
     after
@@ -50,6 +50,7 @@ defmodule LcovEx.Tasks.LcovTest do
     setup do
       on_exit(fn ->
         # Cleanup
+        File.rm("example_umbrella_project/cover/lcov.info")
         File.rm("example_umbrella_project/apps/example_project/cover/lcov.info")
         File.rm("example_umbrella_project/apps/example_project_2/cover/lcov.info")
       end)
@@ -58,8 +59,20 @@ defmodule LcovEx.Tasks.LcovTest do
     test "mix lcov" do
       assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
 
-      assert output =~ "Adding to lcov file..."
-      assert output =~ "Coverage file successfully created at cover/lcov.info"
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file for umbrella created at cover/lcov.info"
+
+      assert File.read!("example_umbrella_project/cover/lcov.info") ==
+               output() <> output_2()
+    end
+
+    test "mix lcov --keep" do
+      assert {output, 0} = System.cmd("mix", ["lcov", "--keep"], cd: "example_umbrella_project")
+
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file for example_project created at apps/example_project/cover/lcov.info"
+      assert output =~ "Coverage file for example_project_2 created at apps/example_project_2/cover/lcov.info"
+      assert output =~ "Coverage file for umbrella created at cover/lcov.info"
 
       assert File.read!("example_umbrella_project/cover/lcov.info") ==
                output() <> output_2()

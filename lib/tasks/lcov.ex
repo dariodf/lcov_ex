@@ -12,7 +12,9 @@ defmodule Mix.Tasks.Lcov do
   """
   @impl Mix.Task
   def run(args) do
-    {opts, files} = OptionParser.parse!(args, strict: [quiet: :boolean, output: :string])
+    {opts, files} =
+      OptionParser.parse!(args, strict: [quiet: :boolean, keep: :boolean, output: :string])
+
     path = Enum.at(files, 0) || File.cwd!()
 
     affected_files =
@@ -46,13 +48,32 @@ defmodule Mix.Tasks.Lcov do
           [cd: path, into: IO.stream(:stdio, :line)]
         end
 
-      System.cmd("mix", ["test", "--cover"], task_opts)
+      {_, 0} = System.cmd("mix", ["test", "--cover"], task_opts)
 
-      unless opts[:quiet] do
-        IO.puts("\nCoverage file successfully created at #{file_path}")
+      if Mix.Project.umbrella?() do
+        for {app, path} <- Mix.Project.apps_paths() do
+          app_lcov_path = Path.join(path, file_path)
+          File.write!(file_path, File.read!(app_lcov_path), [:append])
+
+          if opts[:keep] do
+            log_info("Coverage file for #{app} created at #{app_lcov_path}", opts)
+          else
+            File.rm!(app_lcov_path)
+          end
+        end
+
+        log_info("\nCoverage file for umbrella created at #{file_path}", opts)
       end
+
+      :ok
     after
       Enum.each(affected_files, fn mix_path -> MixFileHelper.recover(mix_path) end)
+    end
+  end
+
+  defp log_info(msg, opts) do
+    unless Keyword.get(opts, :quiet, false) do
+      Mix.shell().info(msg)
     end
   end
 end
