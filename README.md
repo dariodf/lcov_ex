@@ -39,13 +39,17 @@ File should be created at `./cover/lcov.info` by default.
 
 ### Options
 
+##### `--quiet`
+
 To run silently use the `--quiet` option:
 
 ```shell
 mix lcov --quiet
 ```
 
-To output the file to a differnt folder, use the `--output` option:
+##### `--output <folder>`
+
+To output the file to a different folder, use the `--output` option:
 
 ```shell
 mix lcov --output coverage
@@ -53,7 +57,7 @@ mix lcov --output coverage
 Coverage file successfully created at coverage/lcov.info
 ```
 
-### Umbrella projects
+##### `--keep`
 
 For umbrella projects you can choose to keep the individual apps lcov files with the `--keep` option:
 
