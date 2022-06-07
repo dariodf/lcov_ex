@@ -48,7 +48,7 @@ defmodule Mix.Tasks.Lcov do
           [cd: path, into: IO.stream(:stdio, :line)]
         end
 
-      {_, 0} = System.cmd("mix", ["test", "--cover"], task_opts)
+      System.cmd("mix", ["test", "--cover"], task_opts)
 
       if Mix.Project.umbrella?() do
         for {app, path} <- Mix.Project.apps_paths() do
