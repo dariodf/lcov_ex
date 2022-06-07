@@ -37,6 +37,8 @@ mix lcov
 
 File should be created at `./cover/lcov.info` by default.
 
+### Options
+
 To run silently use the `--quiet` option:
 
 ```shell
