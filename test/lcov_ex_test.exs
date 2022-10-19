@@ -39,8 +39,9 @@ defmodule LcovExTest do
                FNF:2
                FNH:2
                DA:5,1
-               LF:1
-               LH:1
+               DA:8,1
+               LF:2
+               LH:2
                end_of_record
                """
     end
