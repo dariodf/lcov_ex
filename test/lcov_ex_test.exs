@@ -17,7 +17,7 @@ defmodule LcovExTest do
     end
 
     test "run mix test --cover with LcovEx" do
-      System.cmd("mix", ["test", "--cover"], env: [{"LCOV", "true"}], cd: "example_project")
+      System.cmd("mix", ["test", "--cover"], cd: "example_project")
 
       assert File.read!("example_project/cover/lcov.info") ==
                """
@@ -39,8 +39,9 @@ defmodule LcovExTest do
                FNF:2
                FNH:2
                DA:5,1
-               LF:1
-               LH:1
+               DA:8,1
+               LF:2
+               LH:2
                end_of_record
                """
     end
