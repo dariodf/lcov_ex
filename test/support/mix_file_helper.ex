@@ -1,4 +1,4 @@
-defmodule LcovEx.MixFileHelper do
+defmodule LcovEx.Test.Support.MixFileHelper do
   @type path :: binary()
 
   @doc """

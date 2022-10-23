@@ -1,6 +1,6 @@
 defmodule LcovExTest do
   use ExUnit.Case
-  alias LcovEx.MixFileHelper
+  alias LcovEx.Test.Support.MixFileHelper
 
   describe "ExampleProject" do
     setup do
