@@ -1,10 +1,8 @@
 defmodule Mix.Tasks.Lcov do
   @moduledoc "Generates lcov test coverage files for the application"
   @shortdoc "Generates lcov files"
-  @preferred_cli_env :test
 
   use Mix.Task
-  alias LcovEx.MixFileHelper
   require Logger
 
   @doc """
@@ -15,60 +13,42 @@ defmodule Mix.Tasks.Lcov do
     {opts, files} =
       OptionParser.parse!(args, strict: [quiet: :boolean, keep: :boolean, output: :string])
 
+    if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
+
     path = Enum.at(files, 0) || File.cwd!()
 
-    affected_files =
-      case Mix.Project.apps_paths() do
-        nil ->
-          [Path.join([path, "mix.exs"])]
-
-        apps_paths ->
-          for {_app, app_path} <- apps_paths, do: Path.join([path, app_path, "mix.exs"])
-      end
-      |> Enum.map(fn path -> String.replace(path, "//", "/") end)
-
-    Enum.each(affected_files, fn mix_path -> MixFileHelper.backup(mix_path) end)
-
+    # Setup folder, reset file
     output = opts[:output] || "cover"
     file_path = "#{output}/lcov.info"
     File.mkdir_p!(output)
     File.rm(file_path)
 
-    try do
-      config = [test_coverage: [tool: LcovEx, output: output]]
+    # Actually run tests and coverage
+    args = Enum.join(args, " ")
 
-      Enum.each(affected_files, fn mix_path ->
-        MixFileHelper.update_project_config(mix_path, config)
-      end)
+    Mix.shell().cmd(
+      "mix lcov.run #{args}",
+      cd: path,
+      env: [{"MIX_ENV", "test"}]
+    )
 
-      task_opts =
-        if opts[:quiet] do
-          [cd: path]
+    # Umbrella projects support
+    if Mix.Project.umbrella?() do
+      for {app, path} <- Mix.Project.apps_paths() do
+        app_lcov_path = Path.join(path, file_path)
+        File.write!(file_path, File.read!(app_lcov_path), [:append])
+
+        if opts[:keep] do
+          log_info("Coverage file for #{app} created at #{app_lcov_path}", opts)
         else
-          [cd: path, into: IO.stream(:stdio, :line)]
+          File.rm!(app_lcov_path)
         end
-
-      System.cmd("mix", ["test", "--cover"], task_opts)
-
-      if Mix.Project.umbrella?() do
-        for {app, path} <- Mix.Project.apps_paths() do
-          app_lcov_path = Path.join(path, file_path)
-          File.write!(file_path, File.read!(app_lcov_path), [:append])
-
-          if opts[:keep] do
-            log_info("Coverage file for #{app} created at #{app_lcov_path}", opts)
-          else
-            File.rm!(app_lcov_path)
-          end
-        end
-
-        log_info("\nCoverage file for umbrella created at #{file_path}", opts)
       end
 
-      :ok
-    after
-      Enum.each(affected_files, fn mix_path -> MixFileHelper.recover(mix_path) end)
+      log_info("\nCoverage file for umbrella created at #{file_path}", opts)
     end
+
+    :ok
   end
 
   defp log_info(msg, opts) do

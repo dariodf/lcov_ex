@@ -10,7 +10,9 @@ defmodule LcovEx.Tasks.LcovTest do
     end
 
     test "lcov task" do
-      assert Mix.Tasks.Lcov.run(["./example_project"])
+      Mix.Project.in_project(:example_project, "example_project", fn _module ->
+        assert Mix.Tasks.Lcov.run([])
+      end)
 
       assert File.read!("example_project/cover/lcov.info") == output()
     end
@@ -54,6 +56,14 @@ defmodule LcovEx.Tasks.LcovTest do
         File.rm("example_umbrella_project/apps/example_project/cover/lcov.info")
         File.rm("example_umbrella_project/apps/example_project_2/cover/lcov.info")
       end)
+    end
+
+    test "lcov task" do
+      Mix.Project.in_project(:example_umbrella_project, "example_umbrella_project", fn _module ->
+        assert Mix.Tasks.Lcov.run([])
+      end)
+
+      assert File.read!("example_umbrella_project/cover/lcov.info") == output() <> output_2()
     end
 
     test "mix lcov" do
