@@ -24,7 +24,7 @@ Add to your dependencies:
 ```elixir
   def deps do
     [
-      {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false}
+      {:lcov_ex, "~> 0.3", only: [:dev, :test], runtime: false}
     ]
   end
 ```
@@ -39,7 +39,7 @@ File should be created at `./cover/lcov.info` by default.
 
 ### Options
 
-##### `--quiet`
+#### `--quiet`
 
 To run silently use the `--quiet` option:
 
@@ -47,7 +47,7 @@ To run silently use the `--quiet` option:
 mix lcov --quiet
 ```
 
-##### `--output <folder>`
+#### `--output <folder>`
 
 To output the file to a different folder, use the `--output` option:
 
@@ -57,7 +57,7 @@ mix lcov --output coverage
 Coverage file successfully created at coverage/lcov.info
 ```
 
-##### `--keep`
+#### `--keep`
 
 For umbrella projects you can choose to keep the individual apps lcov files with the `--keep` option:
 
