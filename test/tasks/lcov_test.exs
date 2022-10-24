@@ -63,7 +63,7 @@ defmodule LcovEx.Tasks.LcovTest do
         assert Mix.Tasks.Lcov.run([])
       end)
 
-      assert File.read!("example_umbrella_project/cover/lcov.info") == output() <> output_2()
+      assert File.read!("example_umbrella_project/cover/lcov.info") == umbrella_output() <> umbrella_output_2()
     end
 
     test "mix lcov" do
@@ -73,7 +73,7 @@ defmodule LcovEx.Tasks.LcovTest do
       assert output =~ "Coverage file for umbrella created at cover/lcov.info"
 
       assert File.read!("example_umbrella_project/cover/lcov.info") ==
-               output() <> output_2()
+               umbrella_output() <> umbrella_output_2()
     end
 
     test "mix lcov --keep" do
@@ -90,7 +90,7 @@ defmodule LcovEx.Tasks.LcovTest do
       assert output =~ "Coverage file for umbrella created at cover/lcov.info"
 
       assert File.read!("example_umbrella_project/cover/lcov.info") ==
-               output() <> output_2()
+               umbrella_output() <> umbrella_output_2()
     end
   end
 
@@ -121,10 +121,37 @@ defmodule LcovEx.Tasks.LcovTest do
     """
   end
 
-  defp output_2 do
+  defp umbrella_output do
+    """
+    TN:Elixir.ExampleProject
+    SF:apps/example_project/lib/example_project.ex
+    FNDA:1,covered/0
+    FNDA:0,not_covered/0
+    FNF:2
+    FNH:1
+    DA:5,1
+    DA:9,0
+    LF:2
+    LH:1
+    end_of_record
+    TN:Elixir.ExampleProject.ExampleModule
+    SF:apps/example_project/lib/example_project/example_module.ex
+    FNDA:1,cover/0
+    FNDA:1,get_value/0
+    FNF:2
+    FNH:2
+    DA:5,1
+    DA:8,1
+    LF:2
+    LH:2
+    end_of_record
+    """
+  end
+
+  defp umbrella_output_2 do
     """
     TN:Elixir.ExampleProject2
-    SF:lib/example_project_2.ex
+    SF:apps/example_project_2/lib/example_project_2.ex
     FNDA:1,also_covered/0
     FNDA:1,covered/0
     FNF:2
@@ -135,7 +162,7 @@ defmodule LcovEx.Tasks.LcovTest do
     LH:2
     end_of_record
     TN:Elixir.ExampleProject2.ExampleModule
-    SF:lib/example_project_2/example_module.ex
+    SF:apps/example_project_2/lib/example_project_2/example_module.ex
     FNDA:2,cover/0
     FNDA:2,get_value/0
     FNF:2

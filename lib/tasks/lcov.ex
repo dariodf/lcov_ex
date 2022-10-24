@@ -36,7 +36,9 @@ defmodule Mix.Tasks.Lcov do
     if Mix.Project.umbrella?() do
       for {app, path} <- Mix.Project.apps_paths() do
         app_lcov_path = Path.join(path, file_path)
-        File.write!(file_path, File.read!(app_lcov_path), [:append])
+        app_lcov = app_lcov_path |> File.read!() |> String.replace("SF:", "SF:#{path}/")
+
+        File.write!(file_path, app_lcov, [:append])
 
         if opts[:keep] do
           log_info("Coverage file for #{app} created at #{app_lcov_path}", opts)
