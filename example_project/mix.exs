@@ -24,7 +24,7 @@ defmodule ExampleProject.MixProject do
   defp deps do
     [
       {:lcov_ex, path: "../", only: [:dev, :test]},
-      {:mox, "~> 1.0", only: :test}
+      {:mox, path: "../deps/mox", only: [:dev, :test]}
     ]
   end
 end
