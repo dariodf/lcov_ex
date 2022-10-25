@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Lcov.Run do
   @recursive true
   @preferred_cli_env :test
 
-  # Ignore modules compiled in runtime by dependencies
+  # Ignore modules compiled by dependencies
   @default_ignored_paths ["deps/"]
 
   use Mix.Task
