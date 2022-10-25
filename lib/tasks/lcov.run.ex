@@ -4,6 +4,9 @@ defmodule Mix.Tasks.Lcov.Run do
   @recursive true
   @preferred_cli_env :test
 
+  # Ignore modules compiled in runtime by dependencies
+  @default_ignored_paths ["deps/"]
+
   use Mix.Task
   require Logger
 
@@ -17,14 +20,14 @@ defmodule Mix.Tasks.Lcov.Run do
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
 
+    # lcov.info file setup
     output = opts[:output] || "cover"
     file_path = "#{output}/lcov.info"
     File.mkdir_p!(output)
     File.rm(file_path)
 
-    config = [test_coverage: [tool: LcovEx, output: output]]
-
     # Update config for current project on runtime
+    config = [test_coverage: [tool: LcovEx, output: output, ignore_paths: @default_ignored_paths]]
     mix_path = Mix.Project.project_file()
     new_config = Mix.Project.config() |> Keyword.merge(config)
     project = Mix.Project.get()

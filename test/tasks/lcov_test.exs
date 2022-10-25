@@ -63,7 +63,8 @@ defmodule LcovEx.Tasks.LcovTest do
         assert Mix.Tasks.Lcov.run([])
       end)
 
-      assert File.read!("example_umbrella_project/cover/lcov.info") == umbrella_output() <> umbrella_output_2()
+      assert File.read!("example_umbrella_project/cover/lcov.info") ==
+               umbrella_output() <> umbrella_output_2()
     end
 
     test "mix lcov" do
@@ -99,12 +100,23 @@ defmodule LcovEx.Tasks.LcovTest do
     TN:Elixir.ExampleProject
     SF:lib/example_project.ex
     FNDA:1,covered/0
+    FNDA:1,mocked/1
     FNDA:0,not_covered/0
-    FNF:2
-    FNH:1
+    FNF:3
+    FNH:2
     DA:5,1
-    DA:9,0
-    LF:2
+    DA:9,1
+    DA:13,0
+    LF:3
+    LH:2
+    end_of_record
+    TN:Elixir.ExampleProject.ExampleBehaviour
+    SF:lib/example_project/example_behaviour.ex
+    FNDA:1,call/1
+    FNF:1
+    FNH:1
+    DA:6,1
+    LF:1
     LH:1
     end_of_record
     TN:Elixir.ExampleProject.ExampleModule

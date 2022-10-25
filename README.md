@@ -91,13 +91,13 @@ mix test --cover
 
 The `output` option indicates the output folder for the generated file.
 
-Optionally, the `ignore_paths` option can be a list of prefixes to ignore when generating the coverage report.
+Optionally, the `ignore_paths` option can be a list of path prefixes to ignore when generating the coverage report.
 
 ```elixir
   def project do
     [
       ...
-      test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/"]]
+      test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/", "deps/"]]
       ...
     ]
 ```
