@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Lcov.Run do
   @preferred_cli_env :test
 
   # Ignore modules compiled by dependencies
-  @default_ignored_paths ["deps/"]
+  @ignored_paths ["deps/"]
 
   use Mix.Task
   require Logger
@@ -27,7 +27,7 @@ defmodule Mix.Tasks.Lcov.Run do
     File.rm(file_path)
 
     # Update config for current project on runtime
-    config = [test_coverage: [tool: LcovEx, output: output, ignore_paths: @default_ignored_paths]]
+    config = [test_coverage: [tool: LcovEx, output: output, ignore_paths: @ignored_paths]]
     mix_path = Mix.Project.project_file()
     new_config = Mix.Project.config() |> Keyword.merge(config)
     project = Mix.Project.get()
