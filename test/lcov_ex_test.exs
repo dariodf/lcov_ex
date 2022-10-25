@@ -1,12 +1,12 @@
 defmodule LcovExTest do
   use ExUnit.Case
-  alias LcovEx.MixFileHelper
+  alias LcovEx.Test.Support.MixFileHelper
 
   describe "ExampleProject" do
     setup do
       mix_path = "#{File.cwd!()}/example_project/mix.exs" |> String.replace("//", "/")
       MixFileHelper.backup(mix_path)
-      config = [test_coverage: [tool: LcovEx]]
+      config = [test_coverage: [tool: LcovEx, ignore_paths: ["deps/"]]]
       MixFileHelper.update_project_config(mix_path, config)
 
       on_exit(fn ->
@@ -24,12 +24,23 @@ defmodule LcovExTest do
                TN:Elixir.ExampleProject
                SF:lib/example_project.ex
                FNDA:1,covered/0
+               FNDA:1,mocked/1
                FNDA:0,not_covered/0
-               FNF:2
-               FNH:1
+               FNF:3
+               FNH:2
                DA:5,1
-               DA:9,0
-               LF:2
+               DA:9,1
+               DA:13,0
+               LF:3
+               LH:2
+               end_of_record
+               TN:Elixir.ExampleProject.ExampleBehaviour
+               SF:lib/example_project/example_behaviour.ex
+               FNDA:1,call/1
+               FNF:1
+               FNH:1
+               DA:6,1
+               LF:1
                LH:1
                end_of_record
                TN:Elixir.ExampleProject.ExampleModule

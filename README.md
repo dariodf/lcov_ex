@@ -24,7 +24,7 @@ Add to your dependencies:
 ```elixir
   def deps do
     [
-      {:lcov_ex, "~> 0.2", only: [:dev, :test], runtime: false}
+      {:lcov_ex, "~> 0.3", only: [:dev, :test], runtime: false}
     ]
   end
 ```
@@ -39,7 +39,7 @@ File should be created at `./cover/lcov.info` by default.
 
 ### Options
 
-##### `--quiet`
+#### `--quiet`
 
 To run silently use the `--quiet` option:
 
@@ -47,7 +47,7 @@ To run silently use the `--quiet` option:
 mix lcov --quiet
 ```
 
-##### `--output <folder>`
+#### `--output <folder>`
 
 To output the file to a different folder, use the `--output` option:
 
@@ -57,7 +57,7 @@ mix lcov --output coverage
 Coverage file successfully created at coverage/lcov.info
 ```
 
-##### `--keep`
+#### `--keep`
 
 For umbrella projects you can choose to keep the individual apps lcov files with the `--keep` option:
 
@@ -91,13 +91,13 @@ mix test --cover
 
 The `output` option indicates the output folder for the generated file.
 
-Optionally, the `ignore_paths` option can be a list of prefixes to ignore when generating the coverage report.
+Optionally, the `ignore_paths` option can be a list of path prefixes to ignore when generating the coverage report.
 
 ```elixir
   def project do
     [
       ...
-      test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/"]]
+      test_coverage: [tool: LcovEx, output: "cover", ignore_paths: ["test/", "deps/"]]
       ...
     ]
 ```
