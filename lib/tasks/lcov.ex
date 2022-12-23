@@ -10,8 +10,10 @@ defmodule Mix.Tasks.Lcov do
   """
   @impl Mix.Task
   def run(args) do
+    {lcov_args, test_args} = LcovEx.ArgParser.split_on_terminator(args)
+
     {opts, files} =
-      OptionParser.parse!(args, strict: [quiet: :boolean, keep: :boolean, output: :string])
+      OptionParser.parse!(lcov_args, strict: [quiet: :boolean, keep: :boolean, output: :string])
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
 
@@ -24,10 +26,11 @@ defmodule Mix.Tasks.Lcov do
     File.rm(file_path)
 
     # Actually run tests and coverage
-    args = Enum.join(args, " ")
+    lcov_args = Enum.join(lcov_args, " ")
+    test_args = Enum.join(test_args, " ")
 
     Mix.shell().cmd(
-      "mix lcov.run #{args}",
+      "mix lcov.run #{lcov_args} -- #{test_args}",
       cd: path,
       env: [{"MIX_ENV", "test"}]
     )

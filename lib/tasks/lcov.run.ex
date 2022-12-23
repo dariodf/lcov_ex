@@ -15,8 +15,10 @@ defmodule Mix.Tasks.Lcov.Run do
   """
   @impl Mix.Task
   def run(args) do
+    {lcov_args, test_args} = LcovEx.ArgParser.split_on_terminator(args)
+
     {opts, _files} =
-      OptionParser.parse!(args, strict: [quiet: :boolean, keep: :boolean, output: :string])
+      OptionParser.parse!(lcov_args, strict: [quiet: :boolean, keep: :boolean, output: :string])
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
 
@@ -35,7 +37,7 @@ defmodule Mix.Tasks.Lcov.Run do
     Mix.ProjectStack.push(project, new_config, mix_path)
 
     # Run tests with updated :test_coverage configuration
-    Mix.Task.run("test", ["--cover", "--color"])
+    Mix.Task.run("test", ["--cover", "--color"] ++ test_args)
 
     :ok
   end
