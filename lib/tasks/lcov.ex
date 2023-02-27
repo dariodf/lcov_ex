@@ -11,7 +11,9 @@ defmodule Mix.Tasks.Lcov do
   @impl Mix.Task
   def run(args) do
     {opts, files} =
-      OptionParser.parse!(args, strict: [quiet: :boolean, keep: :boolean, output: :string])
+      OptionParser.parse!(args,
+        strict: [quiet: :boolean, keep: :boolean, output: :string, exit: :boolean]
+      )
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
 
@@ -26,11 +28,24 @@ defmodule Mix.Tasks.Lcov do
     # Actually run tests and coverage
     args = Enum.join(args, " ")
 
-    Mix.shell().cmd(
-      "mix lcov.run #{args}",
-      cd: path,
-      env: [{"MIX_ENV", "test"}]
-    )
+    test_exit_code =
+      Mix.shell().cmd(
+        "mix lcov.run #{args}",
+        cd: path,
+        env: [{"MIX_ENV", "test"}]
+      )
+
+    cond do
+      is_nil(opts[:exit]) ->
+        :ok
+
+      test_exit_code == 0 ->
+        :ok
+
+      true ->
+        # exit with the same exit code as the tests
+        System.at_exit(fn _ -> exit({:shutdown, test_exit_code}) end)
+    end
 
     # Umbrella projects support
     if Mix.Project.umbrella?() do

@@ -16,7 +16,9 @@ defmodule Mix.Tasks.Lcov.Run do
   @impl Mix.Task
   def run(args) do
     {opts, _files} =
-      OptionParser.parse!(args, strict: [quiet: :boolean, keep: :boolean, output: :string])
+      OptionParser.parse!(args,
+        strict: [quiet: :boolean, keep: :boolean, output: :string, exit: :boolean]
+      )
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
 
@@ -36,7 +38,5 @@ defmodule Mix.Tasks.Lcov.Run do
 
     # Run tests with updated :test_coverage configuration
     Mix.Task.run("test", ["--cover", "--color"])
-
-    :ok
   end
 end

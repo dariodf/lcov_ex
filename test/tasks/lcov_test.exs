@@ -46,6 +46,20 @@ defmodule LcovEx.Tasks.LcovTest do
     after
       File.rm_rf!("example_project/coverage")
     end
+
+    test "mix lcov exits normally on failure" do
+      assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_failing_project")
+
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file created at cover/lcov.info"
+    end
+
+    test "mix lcov --exit returns a non-zero exit code on failure" do
+      assert {output, 2} = System.cmd("mix", ["lcov", "--exit"], cd: "example_failing_project")
+
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file created at cover/lcov.info"
+    end
   end
 
   describe "ExampleUmbrellaProject" do
