@@ -70,6 +70,14 @@ Coverage file for my_other_app created at apps/my_other_app/cover/lcov.info
 Coverage file for umbrella created at cover/lcov.info
 ```
 
+#### `--exit`
+
+Exits with a non-zero exit code if the tests fail: the same code that `mix test` would have exited with.
+
+``` shell
+mix lcov --exit
+```
+
 ### As test coverage tool
 
 Alternatively, you can set up `LcovEx` as your test coverage tool in your project configuration:
