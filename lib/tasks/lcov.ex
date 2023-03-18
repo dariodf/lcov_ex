@@ -22,18 +22,20 @@ defmodule Mix.Tasks.Lcov do
     path = Enum.at(files, 0) || cwd
 
     # Actually run tests and coverage
+    task = "lcov.run"
     args = Enum.join(args ++ ["--cwd #{cwd}"], " ")
 
-    # Script to load LcovEx modules and tasks from beam files on runtime if necessary, then run `lcov.run`
+    # Script to load a mix task and related dependency modules from beam files on runtime if necessary,
+    # and then run the task
     script = @load_and_run_task_script
 
-    # .beam path for LcovEx module
-    beam_path = LcovEx |> :code.which() |> to_string()
+    # .beam path for `lcov.run` task
+    beam_path = Mix.Task.get(task) |> :code.which() |> to_string()
 
     test_exit_code =
       Mix.shell().cmd(
         """
-        mix run -e "#{script}" #{beam_path} "lcov.run #{args}"
+        mix run -e "#{script}" #{beam_path} "#{task} #{args}"
         """,
         cd: path,
         env: [{"MIX_ENV", "test"}]

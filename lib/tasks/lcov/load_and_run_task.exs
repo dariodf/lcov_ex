@@ -1,5 +1,5 @@
-# Script to load a dependency modules and tasks from beam files on runtime if necessary,
-# and then run the given dependency mix task
+# Script to load a mix task and related dependency modules from beam files on runtime if necessary,
+# and then run the task
 beam_path = System.argv() |> Enum.at(-2)
 dependency_module = Path.rootname(beam_path) |> String.to_atom()
 
