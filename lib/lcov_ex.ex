@@ -75,15 +75,19 @@ defmodule LcovEx do
 
     cond do
       recursing? && keep? ->
+        # Using --keep option from umbrella
         log_info("\nCoverage file for #{app} created at #{app_lcov_path}")
 
-      File.cwd!() == caller_cwd ->
-        log_info("\nCoverage file created at #{path}")
-
       not recursing? && File.cwd!() != caller_cwd ->
+        # Using an umbrella app path from umbrella
         log_info("\nCoverage file created at #{app_lcov_path}")
 
+      File.cwd!() == caller_cwd ->
+        # Not an umbrella
+        log_info("\nCoverage file created at #{path}")
+
       true ->
+        # Don't log for umbrellas unless using --keep
         :no_log
     end
   end
