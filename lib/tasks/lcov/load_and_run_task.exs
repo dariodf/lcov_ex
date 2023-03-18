@@ -4,7 +4,7 @@ beam_path = System.argv() |> Enum.at(-2)
 task_module = Path.rootname(beam_path) |> String.to_atom()
 
 unless Code.ensure_loaded?(task_module) do
-  # Get beam files data
+  # Get dependency beam files data
   beam_dir = Path.dirname(beam_path)
   beam_extension = Path.extname(beam_path)
   # Load all dependency modules
