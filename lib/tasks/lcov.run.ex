@@ -35,14 +35,12 @@ defmodule Mix.Tasks.Lcov.Run do
     File.rm(file_path)
 
     # Update config for current project on runtime
-    cwd = opts[:cwd]
-
     config = [
       test_coverage: [
         tool: LcovEx,
         output: output,
         ignore_paths: @ignored_paths,
-        cwd: cwd,
+        cwd: opts[:cwd],
         keep: opts[:keep]
       ]
     ]
