@@ -43,6 +43,7 @@ defmodule Mix.Tasks.Lcov do
     Mix.Task.run(task, args)
     """
 
+    # .beam path for LcovEx module
     beam_path = LcovEx |> :code.which() |> to_string()
 
     test_exit_code =
@@ -54,40 +55,37 @@ defmodule Mix.Tasks.Lcov do
         env: [{"MIX_ENV", "test"}]
       )
 
-    cond do
-      is_nil(opts[:exit]) ->
-        :ok
-
-      test_exit_code == 0 ->
-        :ok
-
-      true ->
-        # exit with the same exit code as the tests
-        System.at_exit(fn _ -> exit({:shutdown, test_exit_code}) end)
+    # --exit option makes the task exit with the same exit code as the tests
+    if opts[:exit] && test_exit_code != 0 do
+      System.at_exit(fn _ -> exit({:shutdown, test_exit_code}) end)
     end
 
     # Umbrella projects support
-    if Mix.Project.umbrella?() && path == cwd do
-      # Setup folder, reset file
-      output = opts[:output] || "cover"
-      file_path = "#{output}/lcov.info"
-      File.mkdir_p!(output)
-      File.rm(file_path)
+    if Mix.Project.umbrella?() && path == cwd, do: umbrella_support(opts)
+    :ok
+  end
 
-      # Write to single umbrella file
-      for {_app, path} <- Mix.Project.apps_paths() do
-        app_lcov_path = Path.join(path, file_path)
-        app_lcov = app_lcov_path |> File.read!()
+  defp umbrella_support(opts) do
+    # Setup folder, reset file
+    output = opts[:output] || "cover"
+    file_path = "#{output}/lcov.info"
+    File.mkdir_p!(output)
+    File.rm(file_path)
 
-        File.write!(file_path, app_lcov, [:append])
+    # Append apps coverage to a single umbrella coverage file
+    for {_app, path} <- Mix.Project.apps_paths() do
+      app_lcov_path = Path.join(path, file_path)
+      app_lcov = app_lcov_path |> File.read!()
 
-        unless opts[:keep] do
-          File.rm!(app_lcov_path)
-        end
+      File.write!(file_path, app_lcov, [:append])
+
+      # Remove unless --keep
+      unless opts[:keep] do
+        File.rm!(app_lcov_path)
       end
-
-      log_info("\nCoverage file for umbrella created at #{file_path}", opts)
     end
+
+    log_info("\nCoverage file for umbrella created at #{file_path}", opts)
 
     :ok
   end
