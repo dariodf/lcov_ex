@@ -7,7 +7,7 @@ unless Code.ensure_loaded?(task_module) do
   # Get beam files data
   beam_dir = Path.dirname(beam_path)
   beam_extension = Path.extname(beam_path)
-  # Load all modules
+  # Load all dependency modules
   for filename <- File.ls!(beam_dir) |> Enum.filter(&String.ends_with?(&1, beam_extension)) do
     binary = File.read!(Path.join(beam_dir, filename))
     :code.load_binary(Path.rootname(filename) |> String.to_atom(), to_charlist(filename), binary)
