@@ -13,7 +13,7 @@ unless Code.ensure_loaded?(task_module) do
     :code.load_binary(Path.rootname(filename) |> String.to_atom(), to_charlist(filename), binary)
   end
 
-  # Load tasks
+  # Load dependency tasks
   Mix.Task.load_tasks([beam_dir])
 end
 
