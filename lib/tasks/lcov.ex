@@ -17,20 +17,37 @@ defmodule Mix.Tasks.Lcov do
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
 
-    path = Enum.at(files, 0) || File.cwd!()
-
-    # Setup folder, reset file
-    output = opts[:output] || "cover"
-    file_path = "#{output}/lcov.info"
-    File.mkdir_p!(output)
-    File.rm(file_path)
+    cwd = File.cwd!()
+    path = Enum.at(files, 0) || cwd
 
     # Actually run tests and coverage
     args = Enum.join(args, " ")
 
+    # Script to load LcovEx modules and tasks from beam files on runtime, and then run `lcov.run`
+    script = """
+    # Get beam file data
+    beam_path = System.argv() |> Enum.at(-2)
+    beam_dir = Path.dirname(beam_path)
+    beam_extension = Path.extname(beam_path)
+    # Load all modules
+    for filename <- File.ls!(beam_dir) |> Enum.filter(&String.ends_with?(&1, beam_extension)) do
+      binary = File.read!(Path.join(beam_dir, filename));
+      :code.load_binary(Path.rootname(filename) |> String.to_atom(), to_charlist(filename), binary);
+    end
+    # Load tasks
+    Mix.Task.load_tasks([beam_dir])
+    # Run lcov.run
+    {task, args} = System.argv() |> Enum.at(-1) |> String.split() |> List.pop_at(0);
+    Mix.Task.run(task, args)
+    """
+
+    beam_path = LcovEx |> :code.which() |> to_string()
+
     test_exit_code =
       Mix.shell().cmd(
-        "mix lcov.run #{args}",
+        """
+        mix run -e "#{script}" #{beam_path} "lcov.run #{args}"
+        """,
         cd: path,
         env: [{"MIX_ENV", "test"}]
       )
@@ -48,7 +65,13 @@ defmodule Mix.Tasks.Lcov do
     end
 
     # Umbrella projects support
-    if Mix.Project.umbrella?() do
+    if Mix.Project.umbrella?() && path == cwd do
+      # Setup folder, reset file
+      output = opts[:output] || "cover"
+      file_path = "#{output}/lcov.info"
+      File.mkdir_p!(output)
+      File.rm(file_path)
+
       for {app, path} <- Mix.Project.apps_paths() do
         app_lcov_path = Path.join(path, file_path)
         app_lcov = app_lcov_path |> File.read!() |> String.replace("SF:", "SF:#{path}/")
