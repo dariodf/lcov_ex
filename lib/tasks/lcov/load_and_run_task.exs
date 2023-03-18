@@ -17,6 +17,6 @@ unless Code.ensure_loaded?(dependency_module) do
   Mix.Task.load_tasks([beam_dir])
 end
 
-# Run lcov.run
+# Run given task
 {task, args} = System.argv() |> Enum.at(-1) |> String.split() |> List.pop_at(0)
 Mix.Task.run(task, args)
