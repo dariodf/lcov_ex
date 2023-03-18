@@ -42,9 +42,8 @@ defmodule Mix.Tasks.Lcov do
       )
 
     # --exit option makes the task exit with the same exit code as the tests
-    if opts[:exit] && test_exit_code != 0 do
-      System.at_exit(fn _ -> exit({:shutdown, test_exit_code}) end)
-    end
+    if opts[:exit] && test_exit_code != 0,
+      do: System.at_exit(fn _ -> exit({:shutdown, test_exit_code}) end)
 
     # Umbrella projects support
     if Mix.Project.umbrella?() && path == cwd, do: umbrella_support(opts)
