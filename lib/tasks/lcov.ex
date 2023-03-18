@@ -23,19 +23,21 @@ defmodule Mix.Tasks.Lcov do
     # Actually run tests and coverage
     args = Enum.join(args ++ ["--cwd #{cwd}"], " ")
 
-    # Script to load LcovEx modules and tasks from beam files on runtime, and then run `lcov.run`
+    # Script to load LcovEx modules and tasks from beam files on runtime if necessary, then run `lcov.run`
     script = """
-    # Get beam file data
-    beam_path = System.argv() |> Enum.at(-2)
-    beam_dir = Path.dirname(beam_path)
-    beam_extension = Path.extname(beam_path)
-    # Load all modules
-    for filename <- File.ls!(beam_dir) |> Enum.filter(&String.ends_with?(&1, beam_extension)) do
-      binary = File.read!(Path.join(beam_dir, filename));
-      :code.load_binary(Path.rootname(filename) |> String.to_atom(), to_charlist(filename), binary);
+    unless Code.ensure_loaded?(LcovEx) do
+      # Get beam file data
+      beam_path = System.argv() |> Enum.at(-2)
+      beam_dir = Path.dirname(beam_path)
+      beam_extension = Path.extname(beam_path)
+      # Load all modules
+      for filename <- File.ls!(beam_dir) |> Enum.filter(&String.ends_with?(&1, beam_extension)) do
+        binary = File.read!(Path.join(beam_dir, filename));
+        :code.load_binary(Path.rootname(filename) |> String.to_atom(), to_charlist(filename), binary);
+      end
+      # Load tasks
+      Mix.Task.load_tasks([beam_dir])
     end
-    # Load tasks
-    Mix.Task.load_tasks([beam_dir])
     # Run lcov.run
     {task, args} = System.argv() |> Enum.at(-1) |> String.split() |> List.pop_at(0);
     Mix.Task.run(task, args)
