@@ -20,9 +20,8 @@ defmodule LcovEx do
     end
 
     output = opts[:output]
+    caller_cwd = opts[:cwd] || File.cwd!()
     ignored_paths = Keyword.get(opts, :ignore_paths, [])
-    cwd = opts[:cwd] || File.cwd!()
-    keep = opts[:keep] || false
 
     fn ->
       log_info("\nGenerating lcov file...")
@@ -30,21 +29,13 @@ defmodule LcovEx do
       lcov =
         :cover.modules()
         |> Enum.sort()
-        |> Enum.map(&calculate_module_coverage(&1, ignored_paths, cwd))
+        |> Enum.map(&calculate_module_coverage(&1, ignored_paths, caller_cwd))
 
       File.mkdir_p!(output)
       path = "#{output}/lcov.info"
       File.write!(path, lcov, [:write])
 
-      app = Mix.Project.config()[:app]
-      app_lcov_path = File.cwd!() |> Path.relative_to(cwd) |> Path.join(path)
-
-      cond do
-        Mix.Task.recursing?() && keep -> log_info("\nCoverage file for #{app} created at #{app_lcov_path}")
-        File.cwd!() == cwd -> log_info("\nCoverage file created at #{path}")
-        not Mix.Task.recursing?() && File.cwd!() != cwd -> log_info("\nCoverage file created at #{app_lcov_path}")
-        true -> :ok
-      end
+      inform_file_written(opts)
 
       :cover.stop()
     end
@@ -71,6 +62,30 @@ defmodule LcovEx do
     {lines_coverage, %{lf: lf, lh: lh}} = Stats.line_coverage_data(lines_data)
 
     Formatter.format_lcov(mod, path, functions_coverage, fnf, fnh, lines_coverage, lf, lh)
+  end
+
+  defp inform_file_written(opts) do
+    output = opts[:output]
+    caller_cwd = opts[:cwd] || File.cwd!()
+    path = "#{output}/lcov.info"
+    keep? = opts[:keep] || false
+    recursing? = Mix.Task.recursing?()
+    app = Mix.Project.config()[:app]
+    app_lcov_path = File.cwd!() |> Path.relative_to(caller_cwd) |> Path.join(path)
+
+    cond do
+      recursing? && keep? ->
+        log_info("\nCoverage file for #{app} created at #{app_lcov_path}")
+
+      File.cwd!() == caller_cwd ->
+        log_info("\nCoverage file created at #{path}")
+
+      not recursing? && File.cwd!() != caller_cwd ->
+        log_info("\nCoverage file created at #{app_lcov_path}")
+
+      true ->
+        :no_log
+    end
   end
 
   defp log_info(msg) do

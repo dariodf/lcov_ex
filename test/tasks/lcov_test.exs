@@ -111,12 +111,16 @@ defmodule LcovEx.Tasks.LcovTest do
     end
 
     test "mix lcov on umbrella app without the dependency" do
-      assert {output, 0} = System.cmd("mix", ["lcov", "apps/example_project_2"], cd: "example_umbrella_project")
+      assert {output, 0} =
+               System.cmd("mix", ["lcov", "apps/example_project_2"],
+                 cd: "example_umbrella_project"
+               )
 
       assert output =~ "Generating lcov file..."
       assert output =~ "Coverage file created at apps/example_project_2/cover/lcov.info"
 
-      assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") == umbrella_output_2()
+      assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") ==
+               umbrella_output_2()
     end
   end
 
