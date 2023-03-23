@@ -119,6 +119,7 @@ defmodule LcovEx.Tasks.LcovTest do
                )
 
       assert output =~ "Generating lcov file..."
+      refute output =~ "Coverage file created at cover/lcov.info"
       assert output =~ "Coverage file created at apps/example_project_2/cover/lcov.info"
 
       assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") ==
