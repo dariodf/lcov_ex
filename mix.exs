@@ -1,12 +1,12 @@
 defmodule LcovEx.MixProject do
   use Mix.Project
 
-  @version "0.3.1"
+  @version "0.3.2"
 
   def project do
     [
       app: :lcov_ex,
-      description: "Lcov file generator.",
+      description: "Lcov test coverage file generator.",
       version: @version,
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
