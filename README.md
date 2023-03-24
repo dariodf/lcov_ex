@@ -57,6 +57,18 @@ mix lcov --output coverage
 Coverage file successfully created at coverage/lcov.info
 ```
 
+#### `--exit`
+
+Exits with a non-zero exit code if the tests fail: the same code that `mix test` would have exited with.
+
+``` shell
+mix lcov --exit
+```
+
+### Umbrella projects
+
+By default, running `mix lcov` at the umbrella level will generate the coverage report for all individual apps and then compile them into a single file at `./cover/lcov.info`.
+
 #### `--keep`
 
 For umbrella projects you can choose to keep the individual apps lcov files with the `--keep` option:
@@ -70,13 +82,15 @@ Coverage file for my_other_app created at apps/my_other_app/cover/lcov.info
 Coverage file for umbrella created at cover/lcov.info
 ```
 
-#### `--exit`
+#### Run for single umbrella app
 
-Exits with a non-zero exit code if the tests fail: the same code that `mix test` would have exited with.
+You can choose to run `mix lcov` for any single app inside an umbrella project by passing its folder as an argument.
 
-``` shell
-mix lcov --exit
+```shell
+mix lcov /apps/myapp
 ```
+
+File should be created at `./apps/my_app/cover/lcov.info` by default.
 
 ### As test coverage tool
 
