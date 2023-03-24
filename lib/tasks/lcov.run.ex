@@ -17,7 +17,13 @@ defmodule Mix.Tasks.Lcov.Run do
   def run(args) do
     {opts, _files} =
       OptionParser.parse!(args,
-        strict: [quiet: :boolean, keep: :boolean, output: :string, exit: :boolean]
+        strict: [
+          quiet: :boolean,
+          keep: :boolean,
+          output: :string,
+          exit: :boolean,
+          cwd: :string
+        ]
       )
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
@@ -29,7 +35,16 @@ defmodule Mix.Tasks.Lcov.Run do
     File.rm(file_path)
 
     # Update config for current project on runtime
-    config = [test_coverage: [tool: LcovEx, output: output, ignore_paths: @ignored_paths]]
+    config = [
+      test_coverage: [
+        tool: LcovEx,
+        output: output,
+        ignore_paths: @ignored_paths,
+        cwd: opts[:cwd],
+        keep: opts[:keep]
+      ]
+    ]
+
     mix_path = Mix.Project.project_file()
     new_config = Mix.Project.config() |> Keyword.merge(config)
     project = Mix.Project.get()

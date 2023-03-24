@@ -86,6 +86,8 @@ defmodule LcovEx.Tasks.LcovTest do
 
       assert output =~ "Generating lcov file..."
       assert output =~ "Coverage file for umbrella created at cover/lcov.info"
+      refute output =~ "apps/example_project/cover/lcov.info"
+      refute output =~ "apps/example_project_2/cover/lcov.info"
 
       assert File.read!("example_umbrella_project/cover/lcov.info") ==
                umbrella_output() <> umbrella_output_2()
@@ -106,6 +108,22 @@ defmodule LcovEx.Tasks.LcovTest do
 
       assert File.read!("example_umbrella_project/cover/lcov.info") ==
                umbrella_output() <> umbrella_output_2()
+    end
+
+    test "mix lcov on umbrella app without the dependency" do
+      refute File.read!("example_umbrella_project/apps/example_project_2/mix.exs") =~ "lcov"
+
+      assert {output, 0} =
+               System.cmd("mix", ["lcov", "apps/example_project_2"],
+                 cd: "example_umbrella_project"
+               )
+
+      assert output =~ "Generating lcov file..."
+      refute output =~ "Coverage file created at cover/lcov.info"
+      assert output =~ "Coverage file created at apps/example_project_2/cover/lcov.info"
+
+      assert File.read!("example_umbrella_project/apps/example_project_2/cover/lcov.info") ==
+               umbrella_output_2()
     end
   end
 
