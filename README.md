@@ -124,6 +124,12 @@ Optionally, the `ignore_paths` option can be a list of path prefixes to ignore w
     ]
 ```
 
+Optionally, the `ignore_modules` option can be a list of module names as atoms and regular expressions that are matched against the module names to ignore when generating the coverage report.
+
+```elixir
+test_coverage: [tool: LcovEx, output: "cover", ignore_modules: [MyApp.IgnoreModule, ~r/.*Test/]],
+```
+
 ## TODOs
 
 - Add missing `FN` lines, for the sake of completion.
