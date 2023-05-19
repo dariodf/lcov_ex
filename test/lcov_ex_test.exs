@@ -6,7 +6,13 @@ defmodule LcovExTest do
     setup do
       mix_path = "#{File.cwd!()}/example_project/mix.exs" |> String.replace("//", "/")
       MixFileHelper.backup(mix_path)
-      config = [test_coverage: [tool: LcovEx, ignore_paths: ["deps/"]]]
+      config = [
+        test_coverage: [
+          tool: LcovEx,
+          ignore_paths: ["deps/"],
+          ignore_modules: [ExampleProject.ExampleIgnoreModule, ~r/.*ExampleIgnoreRegex.*/]
+        ]
+      ]
       MixFileHelper.update_project_config(mix_path, config)
 
       on_exit(fn ->
