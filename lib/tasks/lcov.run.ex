@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Lcov.Run do
   """
   @impl Mix.Task
   def run(args) do
-    {opts, _files} =
+    {opts, files} =
       OptionParser.parse!(args,
         strict: [
           quiet: :boolean,
@@ -34,6 +34,8 @@ defmodule Mix.Tasks.Lcov.Run do
     File.mkdir_p!(output)
     File.rm(file_path)
 
+    arg_path = Enum.at(files, 0)
+
     # Update config for current project on runtime
     config = [
       test_coverage: [
@@ -41,7 +43,8 @@ defmodule Mix.Tasks.Lcov.Run do
         output: output,
         ignore_paths: @ignored_paths,
         cwd: opts[:cwd],
-        keep: opts[:keep]
+        keep: opts[:keep],
+        arg_path: arg_path
       ]
     ]
 
@@ -51,7 +54,8 @@ defmodule Mix.Tasks.Lcov.Run do
     Mix.ProjectStack.pop()
     Mix.ProjectStack.push(project, new_config, mix_path)
 
+    arg_path_test_dir = Path.join("#{arg_path}", "test")
     # Run tests with updated :test_coverage configuration
-    Mix.Task.run("test", ["--cover", "--color"])
+    Mix.Task.run("test", ["--cover", "--color", "#{arg_path_test_dir}"])
   end
 end

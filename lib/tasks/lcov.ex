@@ -37,7 +37,6 @@ defmodule Mix.Tasks.Lcov do
         """
         mix run -e "#{script}" #{beam_path} "#{task} #{args}"
         """,
-        cd: path,
         env: [{"MIX_ENV", "test"}]
       )
 
