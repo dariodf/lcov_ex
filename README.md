@@ -6,7 +6,9 @@ The docs can be found at [https://hexdocs.pm/lcov_ex](https://hexdocs.pm/lcov_ex
 
 ## Why
 
-Many test coverage tools use [`lcov`](https://manpages.debian.org/stretch/lcov/geninfo.1.en.html#FILES) files as an input to generate reports.
+### Visual line coverage
+
+Many test coverage tools use [`lcov`](https://manpages.debian.org/stretch/lcov/geninfo.1.en.html#FILES) files as an input.
 
 You can use it as I do to watch coverage progress in the following editors:
 
@@ -16,6 +18,12 @@ You can use it as I do to watch coverage progress in the following editors:
 - Atom, using the [lcov-info](https://atom.io/packages/lcov-info) extension (it requires you to change the output folder to "coverage", see below).
 
 Please let me know if you made it work in your previously unlisted favorite editor. Or, if you're really nice, just add it to this list yourself :slightly_smiling_face:
+
+### Coverage report in CI
+
+You can use `mix lcov --exit` in a Github Action CI to safely run your tests and generate the lcov file, and then use that with [a report tool](https://github.com/marketplace/actions/lcov-pull-request-report) to generate a comment with code coverage information in your pull requests.
+
+See [this project's CI configuration](https://github.com/dariodf/lcov_ex/blob/master/.github/workflows/elixir.yml) for more info on how to set it up.
 
 ## Installation
 
