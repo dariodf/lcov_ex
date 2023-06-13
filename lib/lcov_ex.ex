@@ -70,7 +70,7 @@ defmodule LcovEx do
     path = "#{output}/lcov.info"
     keep? = opts[:keep] || false
     recursing? = Mix.Task.recursing?()
-    arg_path = opts[:arg_path]
+    app_path = opts[:app_path]
     app = Mix.Project.config()[:app]
     app_lcov_path = File.cwd!() |> Path.relative_to(caller_cwd) |> Path.join(path)
 
@@ -79,7 +79,7 @@ defmodule LcovEx do
         # Using --keep option from umbrella
         log_info("\nCoverage file for #{app} created at #{app_lcov_path}")
 
-      arg_path && File.cwd!() != caller_cwd ->
+      app_path && File.cwd!() != caller_cwd ->
         # Using an umbrella app path from umbrella
         log_info("\nCoverage file created at #{app_lcov_path}")
 

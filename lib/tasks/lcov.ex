@@ -29,13 +29,14 @@ defmodule Mix.Tasks.Lcov do
     # and then run the task
     script = @load_and_run_task_script
 
+    task_module = Mix.Task.get(task)
     # .beam path for `lcov.run` task
-    beam_path = Mix.Task.get(task) |> :code.which() |> to_string()
+    beam_path = task_module |> :code.which() |> to_string()
 
     test_exit_code =
       Mix.shell().cmd(
         """
-        mix run -e "#{script}" #{beam_path} "#{task} #{args}"
+        mix run -e "#{script}" "#{beam_path}" "#{task_module}" "#{task} #{args}"
         """,
         env: [{"MIX_ENV", "test"}]
       )

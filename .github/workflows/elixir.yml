@@ -27,5 +27,28 @@ jobs:
         restore-keys: ${{ runner.os }}-mix-
     - name: Install dependencies
       run: mix deps.get
-    - name: Run tests
-      run: mix test
+    - name: Run tests with lcov --exit
+      run: mix lcov --exit
+    - name: Upload code coverage
+      uses: actions/upload-artifact@v3
+      with:
+        name: lcov-file
+        path: cover/lcov.info
+
+  coverage_report:
+    name: Generate coverage report
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download code coverage reports
+      uses: actions/download-artifact@v3
+      with:
+        name: lcov-file
+        path: cover
+    - name: Report code coverage
+      uses: kefasjw/lcov-pull-request-report@v1
+      with:
+        # Lcov file location
+        lcov-file: cover/lcov.info
+        # Github token required for getting list of changed files and posting comments
+        github-token: ${{ secrets.GITHUB_TOKEN }}

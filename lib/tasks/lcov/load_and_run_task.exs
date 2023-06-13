@@ -1,8 +1,9 @@
 # Script to load a mix task and related dependency modules from beam files on runtime if necessary,
 # and then run the task
-beam_path = System.argv() |> Enum.at(-2)
-task_module = Path.rootname(beam_path) |> String.to_atom()
+beam_path = System.argv() |> Enum.at(0)
+task_module = System.argv() |> Enum.at(1) |> String.to_atom()
 
+# Ensure that task module is loaded
 unless Code.ensure_loaded?(task_module) do
   # Get dependency beam files data
   beam_dir = Path.dirname(beam_path)
