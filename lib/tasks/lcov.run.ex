@@ -34,7 +34,7 @@ defmodule Mix.Tasks.Lcov.Run do
     File.mkdir_p!(output)
     File.rm(file_path)
 
-    arg_path = Enum.at(files, 0)
+    app_path = Enum.at(files, 0)
 
     # Update config for current project on runtime
     config = [
@@ -44,7 +44,7 @@ defmodule Mix.Tasks.Lcov.Run do
         ignore_paths: @ignored_paths,
         cwd: opts[:cwd],
         keep: opts[:keep],
-        arg_path: arg_path
+        app_path: app_path
       ]
     ]
 
@@ -54,8 +54,10 @@ defmodule Mix.Tasks.Lcov.Run do
     Mix.ProjectStack.pop()
     Mix.ProjectStack.push(project, new_config, mix_path)
 
-    arg_path_test_dir = Path.join("#{arg_path}", "test")
+    test_params =
+      ["--cover", "--color"] ++ if app_path, do: [Path.join("#{app_path}", "test")], else: []
+
     # Run tests with updated :test_coverage configuration
-    Mix.Task.run("test", ["--cover", "--color", "#{arg_path_test_dir}"])
+    Mix.Task.run("test", test_params)
   end
 end
