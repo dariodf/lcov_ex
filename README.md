@@ -6,7 +6,7 @@ The docs can be found at [https://hexdocs.pm/lcov_ex](https://hexdocs.pm/lcov_ex
 
 ## Why
 
-### Visual line coverage
+### Visualize line coverage
 
 Many test coverage tools use [`lcov`](https://manpages.debian.org/stretch/lcov/geninfo.1.en.html#FILES) files as an input.
 
