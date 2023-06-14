@@ -152,6 +152,28 @@ defmodule LcovEx.Tasks.LcovTest do
     LF:1
     LH:1
     end_of_record
+    TN:Elixir.ExampleProject.ExampleIgnoreModule
+    SF:lib/example_project/example_ignore_module.ex
+    FNDA:0,cover/0
+    FNDA:0,get_value/0
+    FNF:2
+    FNH:0
+    DA:5,0
+    DA:8,0
+    LF:2
+    LH:0
+    end_of_record
+    TN:Elixir.ExampleProject.ExampleIgnoreRegexModule
+    SF:lib/example_project/example_ignore_regex_module.ex
+    FNDA:0,cover/0
+    FNDA:0,get_value/0
+    FNF:2
+    FNH:0
+    DA:5,0
+    DA:8,0
+    LF:2
+    LH:0
+    end_of_record
     TN:Elixir.ExampleProject.ExampleModule
     SF:lib/example_project/example_module.ex
     FNDA:1,cover/0
