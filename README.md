@@ -73,6 +73,20 @@ Exits with a non-zero exit code if the tests fail: the same code that `mix test`
 mix lcov --exit
 ```
 
+#### `--fail-fast`
+
+Fails the task early at the first failed test by passing the `--max-failures 1` option to `mix test`.
+
+``` shell
+mix lcov --fail-fast
+```
+
+Useful in combination with `--exit` for CI.
+
+``` shell
+mix lcov --fail-fast --exit
+```
+
 ### Umbrella projects
 
 By default, running `mix lcov` at the umbrella level will generate the coverage report for all individual apps and then compile them into a single file at `./cover/lcov.info`.

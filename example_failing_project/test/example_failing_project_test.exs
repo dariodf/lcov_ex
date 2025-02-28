@@ -4,4 +4,8 @@ defmodule ExampleFailingProjectTest do
   test "failure" do
     assert false
   end
+
+  test "second failure" do
+    assert false
+  end
 end
