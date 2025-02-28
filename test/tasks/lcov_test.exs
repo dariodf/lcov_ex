@@ -62,15 +62,15 @@ defmodule LcovEx.Tasks.LcovTest do
       assert output =~ "2 tests, 2 failures"
     end
 
-    test "mix lcov --fail exits the run at the first failed test" do
-      assert {output, 0} = System.cmd("mix", ["lcov", "--fail"], cd: "example_failing_project")
+    test "mix lcov --fail-fast exits the run at the first failed test" do
+      assert {output, 0} = System.cmd("mix", ["lcov", "--fail-fast"], cd: "example_failing_project")
 
       assert output =~ "--max-failures reached, aborting test suite"
       assert output =~ "1 test, 1 failure"
     end
 
-    test "mix lcov --exit --fail returns a non-zero code at the first failed test" do
-      assert {output, 2} = System.cmd("mix", ["lcov", "--fail", "--exit"], cd: "example_failing_project")
+    test "mix lcov --exit --fail-fast returns a non-zero code at the first failed test" do
+      assert {output, 2} = System.cmd("mix", ["lcov", "--fail-fast", "--exit"], cd: "example_failing_project")
 
       assert output =~ "--max-failures reached, aborting test suite"
       assert output =~ "1 test, 1 failure"

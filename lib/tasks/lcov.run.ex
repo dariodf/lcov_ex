@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Lcov.Run do
           keep: :boolean,
           output: :string,
           exit: :boolean,
-          fail: :boolean,
+          fail_fast: :boolean,
           cwd: :string
         ]
       )
@@ -58,7 +58,7 @@ defmodule Mix.Tasks.Lcov.Run do
     test_params =
       ["--cover", "--color"] ++
         if(app_path, do: [Path.join("#{app_path}", "test")], else: []) ++
-        if(opts[:fail], do: ["--max-failures", "1"], else: [])
+        if(opts[:fail_fast], do: ["--max-failures", "1"], else: [])
 
     # Run tests with updated :test_coverage configuration
     Mix.Task.run("test", test_params)
