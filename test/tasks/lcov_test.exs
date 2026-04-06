@@ -88,6 +88,16 @@ defmodule LcovEx.Tasks.LcovTest do
 
       assert File.read!("example_project/cover/lcov.info") == output()
     end
+
+    test "mix lcov --no-compile skips compilation" do
+      assert {output, 0} =
+               System.cmd("mix", ["lcov", "--no-compile"], cd: "example_project")
+
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file created at cover/lcov.info"
+
+      assert File.read!("example_project/cover/lcov.info") == output()
+    end
   end
 
   describe "ExampleUmbrellaProject" do

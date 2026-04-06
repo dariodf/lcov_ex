@@ -24,7 +24,8 @@ defmodule Mix.Tasks.Lcov.Run do
           exit: :boolean,
           fail_fast: :boolean,
           cwd: :string,
-          partitions: :integer
+          partitions: :integer,
+          no_compile: :boolean
         ]
       )
 
@@ -60,7 +61,8 @@ defmodule Mix.Tasks.Lcov.Run do
       ["--cover", "--color"] ++
         if(app_path, do: [Path.join("#{app_path}", "test")], else: []) ++
         if(opts[:fail_fast], do: ["--max-failures", "1"], else: []) ++
-        if(opts[:partitions], do: ["--partitions", "#{opts[:partitions]}"], else: [])
+        if(opts[:partitions], do: ["--partitions", "#{opts[:partitions]}"], else: []) ++
+        if(opts[:no_compile], do: ["--no-compile"], else: [])
 
     # Run tests with updated :test_coverage configuration
     Mix.Task.run("test", test_params)
