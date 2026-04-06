@@ -75,6 +75,19 @@ defmodule LcovEx.Tasks.LcovTest do
       assert output =~ "--max-failures reached, aborting test suite"
       assert output =~ "1 test, 1 failure"
     end
+
+    test "mix lcov --partitions passes partitions to mix test" do
+      assert {output, 0} =
+               System.cmd("mix", ["lcov", "--partitions", "2"],
+                 cd: "example_project",
+                 env: [{"MIX_TEST_PARTITION", "1"}]
+               )
+
+      assert output =~ "Generating lcov file..."
+      assert output =~ "Coverage file created at cover/lcov.info"
+
+      assert File.read!("example_project/cover/lcov.info") == output()
+    end
   end
 
   describe "ExampleUmbrellaProject" do
