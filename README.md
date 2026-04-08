@@ -87,6 +87,22 @@ Useful in combination with `--exit` for CI.
 mix lcov --fail-fast --exit
 ```
 
+#### `--partitions <number>`
+
+Splits tests into partitions by passing the `--partitions` option to `mix test`. Requires the `MIX_TEST_PARTITION` environment variable to be set to the partition to run.
+
+``` shell
+MIX_TEST_PARTITION=1 mix lcov --partitions 2
+```
+
+#### `--no-compile`
+
+Skips compilation before running tests by passing the `--no-compile` option to `mix test`.
+
+``` shell
+mix lcov --no-compile
+```
+
 ### Umbrella projects
 
 By default, running `mix lcov` at the umbrella level will generate the coverage report for all individual apps and then compile them into a single file at `./cover/lcov.info`.
