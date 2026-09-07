@@ -58,6 +58,7 @@ defmodule LcovEx do
 
     Path.type(path) != :relative or Enum.any?(ignored_paths, &String.starts_with?(path, &1))
   end
+
   defp calculate_module_coverage(mod, cwd) do
     path = mod.module_info(:compile)[:source] |> to_string() |> Path.relative_to(cwd)
 

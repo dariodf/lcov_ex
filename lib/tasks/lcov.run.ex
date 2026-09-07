@@ -39,17 +39,21 @@ defmodule Mix.Tasks.Lcov.Run do
 
     app_path = Enum.at(files, 0)
 
-    # Update config for current project on runtime
-    config = [
-      test_coverage: [
+    # Update config for current project on runtime, preserving any other
+    # :test_coverage options set in the project (e.g. :ignore_modules)
+    test_coverage =
+      Mix.Project.config()
+      |> Keyword.get(:test_coverage, [])
+      |> Keyword.merge(
         tool: LcovEx,
         output: output,
-        ignore_paths: @ignored_paths,
         cwd: opts[:cwd],
         keep: opts[:keep],
         app_path: app_path
-      ]
-    ]
+      )
+      |> Keyword.update(:ignore_paths, @ignored_paths, &Enum.uniq(&1 ++ @ignored_paths))
+
+    config = [test_coverage: test_coverage]
 
     mix_path = Mix.Project.project_file()
     new_config = Mix.Project.config() |> Keyword.merge(config)

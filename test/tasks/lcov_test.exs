@@ -1,5 +1,6 @@
 defmodule LcovEx.Tasks.LcovTest do
   use ExUnit.Case, async: true
+  alias LcovEx.Test.Support.MixFileHelper
 
   describe "ExampleProject" do
     setup do
@@ -47,6 +48,29 @@ defmodule LcovEx.Tasks.LcovTest do
       File.rm_rf!("example_project/coverage")
     end
 
+    test "mix lcov honors ignore_modules from the project config" do
+      mix_path = "#{File.cwd!()}/example_project/mix.exs"
+      MixFileHelper.backup(mix_path)
+
+      config = [
+        test_coverage: [
+          tool: LcovEx,
+          ignore_modules: [ExampleProject.ExampleIgnoreModule, ~r/.*ExampleIgnoreRegex.*/]
+        ]
+      ]
+
+      MixFileHelper.update_project_config(mix_path, config)
+
+      assert {_output, 0} = System.cmd("mix", ["lcov"], cd: "example_project")
+
+      coverage = File.read!("example_project/cover/lcov.info")
+      assert coverage =~ "TN:Elixir.ExampleProject.ExampleModule\n"
+      refute coverage =~ "TN:Elixir.ExampleProject.ExampleIgnoreModule\n"
+      refute coverage =~ "TN:Elixir.ExampleProject.ExampleIgnoreRegexModule\n"
+    after
+      MixFileHelper.recover("#{File.cwd!()}/example_project/mix.exs")
+    end
+
     test "mix lcov exits normally on failure" do
       assert {output, 0} = System.cmd("mix", ["lcov"], cd: "example_failing_project")
 
@@ -63,14 +87,16 @@ defmodule LcovEx.Tasks.LcovTest do
     end
 
     test "mix lcov --fail-fast exits the run at the first failed test" do
-      assert {output, 0} = System.cmd("mix", ["lcov", "--fail-fast"], cd: "example_failing_project")
+      assert {output, 0} =
+               System.cmd("mix", ["lcov", "--fail-fast"], cd: "example_failing_project")
 
       assert output =~ "--max-failures reached, aborting test suite"
       assert output =~ "1 test, 1 failure"
     end
 
     test "mix lcov --exit --fail-fast returns a non-zero code at the first failed test" do
-      assert {output, 2} = System.cmd("mix", ["lcov", "--fail-fast", "--exit"], cd: "example_failing_project")
+      assert {output, 2} =
+               System.cmd("mix", ["lcov", "--fail-fast", "--exit"], cd: "example_failing_project")
 
       assert output =~ "--max-failures reached, aborting test suite"
       assert output =~ "1 test, 1 failure"
@@ -90,8 +116,7 @@ defmodule LcovEx.Tasks.LcovTest do
     end
 
     test "mix lcov --no-compile skips compilation" do
-      assert {output, 0} =
-               System.cmd("mix", ["lcov", "--no-compile"], cd: "example_project")
+      assert {output, 0} = System.cmd("mix", ["lcov", "--no-compile"], cd: "example_project")
 
       assert output =~ "Generating lcov file..."
       assert output =~ "Coverage file created at cover/lcov.info"
@@ -146,6 +171,25 @@ defmodule LcovEx.Tasks.LcovTest do
 
       assert File.read!("example_umbrella_project/cover/lcov.info") ==
                umbrella_output() <> umbrella_output_2()
+    end
+
+    test "mix lcov honors ignore_modules from an umbrella app config" do
+      mix_path = "#{File.cwd!()}/example_umbrella_project/apps/example_project/mix.exs"
+      MixFileHelper.backup(mix_path)
+
+      config = [test_coverage: [ignore_modules: [ExampleProject.ExampleModule]]]
+      MixFileHelper.update_project_config(mix_path, config)
+
+      assert {_output, 0} = System.cmd("mix", ["lcov"], cd: "example_umbrella_project")
+
+      coverage = File.read!("example_umbrella_project/cover/lcov.info")
+      assert coverage =~ "TN:Elixir.ExampleProject\n"
+      refute coverage =~ "TN:Elixir.ExampleProject.ExampleModule\n"
+      assert coverage =~ "TN:Elixir.ExampleProject2.ExampleModule\n"
+    after
+      MixFileHelper.recover(
+        "#{File.cwd!()}/example_umbrella_project/apps/example_project/mix.exs"
+      )
     end
 
     test "mix lcov on umbrella app without the dependency" do
