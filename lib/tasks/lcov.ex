@@ -13,7 +13,15 @@ defmodule Mix.Tasks.Lcov do
   def run(args) do
     {opts, files} =
       OptionParser.parse!(args,
-        strict: [quiet: :boolean, keep: :boolean, output: :string, exit: :boolean, fail_fast: :boolean, partitions: :integer, no_compile: :boolean]
+        strict: [
+          quiet: :boolean,
+          keep: :boolean,
+          output: :string,
+          exit: :boolean,
+          fail_fast: :boolean,
+          partitions: :integer,
+          no_compile: :boolean
+        ]
       )
 
     if opts[:quiet], do: Mix.shell(Mix.Shell.Quiet)
